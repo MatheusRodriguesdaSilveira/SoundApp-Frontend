@@ -13,7 +13,7 @@ export const UserTemplate = () => {
             className="flex gap-2 border rounded-lg py-1.5 px-1.5 items-center justify-between mb-2"
           >
             <div className="flex gap-2 items-center">
-              <div className="bg-zinc-300 rounded-full p-2.5 border border-red-500">
+              <div className="bg-zinc-200 rounded-full p-2.5 border border-red-500">
                 <Image src={User} alt="profile" className="size-4" />
               </div>
               <p>user{index + 2}</p>

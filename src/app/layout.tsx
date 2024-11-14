@@ -15,8 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "SoundApp-PEU",
-  description: "SoundApp - Trabalho Faculdade",
+  title: "DevBlog",
+  description: "DevBlog",
 };
 
 export default function RootLayout({

@@ -27,6 +27,8 @@ import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 import UserProfile from "/public/user.png";
+import { FormPost } from "./formPost";
+import { DialogEditProfile } from "./dialogEditProfile";
 
 export const NavBar = () => {
   const router = useRouter();
@@ -47,7 +49,7 @@ export const NavBar = () => {
               <Home className="size-7" />
               <a
                 className="block mt-0.5 font-medium text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 before:bg-zinc-200 before:transition-all before:duration-300 hover:before:w-full"
-                href=""
+                href="/home"
               >
                 Página inicial
               </a>
@@ -82,25 +84,35 @@ export const NavBar = () => {
           </ul>
           <DropdownMenuSeparator />
 
-          <div className="m-5">
-            <div className="flex gap-2 my-5">
+          <div className="m-1">
+            <div className="flex gap-2 my-5 hover:bg-zinc-900 w-[200px] rounded-md px-2 py-2">
               <ModeThemeHeader />{" "}
             </div>
           </div>
-          <div className="m-4">
-            <div className="flex gap-2 items-center my-5 hover:scale-105">
-              <div className="bg-zinc-300 rounded-full p-2.5 hover:scale-10 border border-red-500">
-                <Image src={UserProfile} alt="profile" className="size-4" />
+
+          <div className="m-1">
+            <a href="/profile" className="">
+              <div className="flex gap-2 items-center my-5 hover:bg-zinc-900 w-[200px] rounded-md px-2 py-2">
+                <div className="bg-zinc-200 rounded-full p-2 hover:scale-105 border border-red-500">
+                  <Image src={UserProfile} alt="profile" className="size-4" />
+                </div>
+                <p>Perfil</p>
               </div>
-              <p className="">user.name</p>
-            </div>
+            </a>
           </div>
 
-          <div className="absolute bottom-0 flex mb-10 gap-5">
+          <DropdownMenuSeparator />
+          {/* Adicionar Postagem */}
+          <div className="xl:mt-5 2xl:mt-12">
+            <FormPost />
+          </div>
+          <div className="absolute bottom-0 flex mb-10 gap-5 xl:mb-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
-                  <Menu />
+                  <div className="text-gray-400 hover:text-gray-200 mx-2 transition-all duration-200 ease-in-out hover:rotate-180 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-full">
+                    <Menu />
+                  </div>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 m-10">
@@ -111,20 +123,27 @@ export const NavBar = () => {
                     <User />
                     <span>Perfil</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bolt />
-                    <span>Edite seu perfil</span>
+
+                  {/* Edit Profile menu */}
+                  <DropdownMenuItem asChild>
+                    <DialogEditProfile />
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
+
                 <DropdownMenuSeparator />
+
                 <DropdownMenuLabel>Outros</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <button onClick={handleLeave}>
-                  <DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Button
+                    variant={"ghost"}
+                    className="flex w-1 h-1 px-7"
+                    onClick={handleLeave}
+                  >
                     <LogOut />
                     <span>Sair</span>
-                  </DropdownMenuItem>
-                </button>
+                  </Button>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -41,17 +41,22 @@ export const SideBarColumn = () => {
             <div className="flex flex-col gap-2">
               <div className="flex gap-1">
                 <p className="p-2 bg-zinc-900 w-full rounded">
-                  <span className="text-red-500">#</span> TopBeats
+                  <span className="text-red-500">#</span> Tech
                 </p>
               </div>
               <div className="flex gap-1">
                 <p className="p-2 bg-zinc-900 w-full rounded">
-                  <span className="text-red-500">#</span> Lançamentos da Semana
+                  <span className="text-red-500">#</span> Dúvidas da Semana
                 </p>
               </div>
               <div className="flex gap-1">
                 <p className="p-2 bg-zinc-900 w-full rounded">
-                  <span className="text-red-500">#</span> TopMusics
+                  <span className="text-red-500">#</span> Vagas
+                </p>
+              </div>
+              <div className="flex gap-1">
+                <p className="p-2 bg-zinc-900 w-full rounded">
+                  <span className="text-red-500">#</span> Estudos
                 </p>
               </div>
             </div>
@@ -73,12 +78,14 @@ export const SideBarColumn = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <div className="flex gap-2 border rounded-lg py-1.5 px-1.5 items-center justify-between">
-                  <div className="flex gap-2 items-center">
-                    <div className="bg-zinc-300 rounded-full p-2.5 border border-red-500">
-                      <Image src={User} alt="profile" className="size-4" />
+                  <a href="/profile">
+                    <div className="flex gap-2 items-center">
+                      <div className="bg-zinc-300 rounded-full p-2.5 border border-red-500">
+                        <Image src={User} alt="profile" className="size-4" />
+                      </div>
+                      <p>user1</p>
                     </div>
-                    <p>user1</p>
-                  </div>
+                  </a>
                   <Button
                     variant={"secondary"}
                     size={"sm"}
