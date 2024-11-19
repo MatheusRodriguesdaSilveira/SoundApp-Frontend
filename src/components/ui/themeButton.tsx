@@ -57,7 +57,7 @@ export function ModeThemeHeader() {
             <Moon className="absolute h-7 w-7 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Escolha um tema</span>
           </button>
-          <button className="block mt-0.5 font-medium text-zinc-200">
+          <button className="block mt-0.5 font-medium dark:text-zinc-200 text-zinc-800">
             Alternar exibição
           </button>
         </div>

@@ -27,7 +27,7 @@ const HomePage = () => {
 
           {/* PostTop */}
           <div className="flex items-start justify-start my-5">
-            <div className="bg-zinc-200 rounded-full p-2 hover:scale-105 border border-red-500">
+            <div className="bg-zinc-200 rounded-full p-2  border border-red-500">
               <Image src={UserProfile} alt="profile" className="size-5" />
             </div>
             <div className="flex gap-2">

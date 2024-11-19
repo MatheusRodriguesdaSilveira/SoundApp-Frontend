@@ -44,11 +44,11 @@ export const NavBar = () => {
           <LogoHeader />
           <DropdownMenuSeparator />
 
-          <ul className="p-5 text-lg">
+          <ul className="p-5 xl:text-base 2xl:text-lg">
             <li className="flex gap-2 mb-5 items-center">
               <Home className="size-7" />
               <a
-                className="block mt-0.5 font-medium text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 before:bg-zinc-200 before:transition-all before:duration-300 hover:before:w-full"
+                className="block mt-0.5 font-medium text-zinc-800 dark:text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 dark:before:bg-zinc-200 before:bg-zinc-800 before:transition-all before:duration-300 hover:before:w-full"
                 href="/home"
               >
                 Página inicial
@@ -57,7 +57,7 @@ export const NavBar = () => {
             <li className="flex gap-2 mb-5">
               <MousePointer2 className="size-7" />
               <a
-                className="block mt-0.5 font-medium text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 before:bg-zinc-200 before:transition-all before:duration-300 hover:before:w-full"
+                className="block mt-0.5 font-medium text-zinc-800 dark:text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 dark:before:bg-zinc-200 before:bg-zinc-800 before:transition-all before:duration-300 hover:before:w-full"
                 href=""
               >
                 Mensagem
@@ -66,7 +66,7 @@ export const NavBar = () => {
             <li className="flex gap-2 mb-5">
               <Handshake className="size-7" />
               <a
-                className="block mt-0.5 font-medium text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 before:bg-zinc-200 before:transition-all before:duration-300 hover:before:w-full"
+                className="block mt-0.5 font-medium text-zinc-800 dark:text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 dark:before:bg-zinc-200 before:bg-zinc-800 before:transition-all before:duration-300 hover:before:w-full"
                 href=""
               >
                 Works
@@ -75,7 +75,7 @@ export const NavBar = () => {
             <li className="flex gap-2">
               <Crown className="size-7" />
               <a
-                className="block mt-0.5 font-medium text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 before:bg-zinc-200 before:transition-all before:duration-300 hover:before:w-full"
+                className="block mt-0.5 font-medium text-zinc-800 dark:text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 dark:before:bg-zinc-200 before:bg-zinc-800 before:transition-all before:duration-300 hover:before:w-full"
                 href=""
               >
                 Premium
@@ -85,14 +85,14 @@ export const NavBar = () => {
           <DropdownMenuSeparator />
 
           <div className="m-1">
-            <div className="flex gap-2 my-5 hover:bg-zinc-900 w-[200px] rounded-md px-2 py-2">
+            <div className="flex gap-2 my-5 hover:bg-zinc-200 dark:hover:bg-zinc-900 w-[200px] rounded-md px-2 py-2">
               <ModeThemeHeader />{" "}
             </div>
           </div>
 
           <div className="m-1">
             <a href="/profile" className="">
-              <div className="flex gap-2 items-center my-5 hover:bg-zinc-900 w-[200px] rounded-md px-2 py-2">
+              <div className="flex gap-2 items-center my-5 hover:bg-zinc-200 dark:hover:bg-zinc-900 w-[200px] rounded-md px-2 py-2">
                 <div className="bg-zinc-200 rounded-full p-2 hover:scale-105 border border-red-500">
                   <Image src={UserProfile} alt="profile" className="size-4" />
                 </div>
@@ -106,11 +106,11 @@ export const NavBar = () => {
           <div className="xl:mt-5 2xl:mt-12">
             <FormPost />
           </div>
-          <div className="absolute bottom-0 flex mb-10 gap-5 xl:mb-0">
+          <div className="absolute bottom-0 flex gap-5 xl:mb-0 2xl:mb-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
-                  <div className="text-gray-400 hover:text-gray-200 mx-2 transition-all duration-200 ease-in-out hover:rotate-180 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-full">
+                  <div className="dark:text-gray-400 dark:hover:text-gray-200 mx-2 transition-all duration-200 ease-in-out hover:rotate-180 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-full">
                     <Menu />
                   </div>
                 </Button>
@@ -120,8 +120,10 @@ export const NavBar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <User />
-                    <span>Perfil</span>
+                    <a href="/profile" className="flex gap-1">
+                      <User className="size-5" />
+                      <span>Perfil</span>
+                    </a>
                   </DropdownMenuItem>
 
                   {/* Edit Profile menu */}
@@ -135,14 +137,13 @@ export const NavBar = () => {
                 <DropdownMenuLabel>Outros</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Button
-                    variant={"ghost"}
-                    className="flex w-1 h-1 px-7"
+                  <button
+                    className="flex bg-transparent border-none h-4 w-full hover:bg-transparent px-1 gap-2 items-center"
                     onClick={handleLeave}
                   >
-                    <LogOut />
-                    <span>Sair</span>
-                  </Button>
+                    <LogOut className="size-4" />
+                    Sair
+                  </button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

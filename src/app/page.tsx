@@ -5,10 +5,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ModeTheme } from "@/components/ui/themeButton";
 import LoginForm from "./login/LoginForm";
 import SignupForm from "./cadastro/Signup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function TabsDemo() {
   const [activeTab, setActiveTab] = useState("login");
+
+  useEffect(() => {
+    // Ouve o evento customizado `signupSuccess`
+    function handleSignupSuccess() {
+      setActiveTab("login");
+    }
+
+    window.addEventListener("signupSuccess", handleSignupSuccess);
+
+    // Limpeza ao desmontar o componente
+    return () => {
+      window.removeEventListener("signupSuccess", handleSignupSuccess);
+    };
+  }, []);
 
   return (
     <>

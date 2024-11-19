@@ -32,7 +32,7 @@ export const FormPost = () => {
       <Dialog>
         <DialogTrigger asChild>
           <Button
-            className="w-[200px] border border-red-500 border-dashed py-6 hover:bg-zinc-900/50"
+            className="w-[200px] border border-red-500 border-dashed py-6 hover:bg-zinc-200 dark:hover:bg-zinc-900/50"
             variant="outline"
           >
             <div className="flex gap-1 items-center">

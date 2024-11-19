@@ -40,22 +40,22 @@ export const SideBarColumn = () => {
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex gap-1">
-                <p className="p-2 bg-zinc-900 w-full rounded">
+                <p className="p-2 bg-zinc-200 dark:bg-zinc-900 w-full rounded">
                   <span className="text-red-500">#</span> Tech
                 </p>
               </div>
               <div className="flex gap-1">
-                <p className="p-2 bg-zinc-900 w-full rounded">
+                <p className="p-2 bg-zinc-200 dark:bg-zinc-900 w-full rounded">
                   <span className="text-red-500">#</span> Dúvidas da Semana
                 </p>
               </div>
               <div className="flex gap-1">
-                <p className="p-2 bg-zinc-900 w-full rounded">
+                <p className="p-2 bg-zinc-200 dark:bg-zinc-900 w-full rounded">
                   <span className="text-red-500">#</span> Vagas
                 </p>
               </div>
               <div className="flex gap-1">
-                <p className="p-2 bg-zinc-900 w-full rounded">
+                <p className="p-2 bg-zinc-200 dark:bg-zinc-900 w-full rounded">
                   <span className="text-red-500">#</span> Estudos
                 </p>
               </div>
