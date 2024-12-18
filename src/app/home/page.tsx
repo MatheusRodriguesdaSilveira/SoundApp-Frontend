@@ -10,8 +10,46 @@ import { ButtonScrollToTop } from "@/components/ui/buttonScrollToTop";
 import Image from "next/image";
 import UserProfile from "/public/user.png";
 import { FormPostTop } from "./components/formPostTop";
-import { ImageIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getCookie } from "cookies-next";
+import { api } from "@/services/api";
+
+interface UserData {
+  name: string;
+  email: string;
+  profilePicture: string;
+  descriptionProfile: string;
+}
+
 const HomePage = () => {
+  const router = useRouter();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = getCookie("login");
+
+        if (!token) {
+          throw new Error("Token not found");
+        }
+
+        const response = await api.get("/info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        router.push("/home");
+      }
+    };
+
+    fetchUserData();
+  }, [router]);
+
   return (
     <>
       <NavBar />
@@ -27,8 +65,15 @@ const HomePage = () => {
 
           {/* PostTop */}
           <div className="flex items-start justify-start my-5">
-            <div className="bg-zinc-200 rounded-full p-2  border border-red-500">
-              <Image src={UserProfile} alt="profile" className="size-5" />
+            <div className="flex-shrink-0">
+              <Image
+                width={200}
+                height={200}
+                style={{ objectFit: "cover" }}
+                src={userData?.profilePicture || UserProfile}
+                alt="profile"
+                className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 h-2 w-2 rounded-full border border-red-500 "
+              />
             </div>
             <div className="flex gap-2">
               <div className="grid mx-3">

@@ -1,33 +1,81 @@
-import { UserPlus2 } from "lucide-react";
 import { Button } from "./button";
 import Image from "next/image";
 import User from "/public/user.png";
+import { useEffect, useState } from "react";
+import { api } from "@/services/api";
+import { getCookie } from "cookies-next";
+
+interface UserData {
+  name: string;
+  email: string;
+  profilePicture: string;
+  descriptionProfile: string;
+  id: string;
+}
 
 export const UserTemplate = () => {
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [currentUser, setCurrentUser] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = getCookie("login");
+
+        if (!token) {
+          throw new Error("Token not found");
+        }
+
+        const response = await api.get("/profiles", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUsers(response.data || []);
+        const userData: UserData[] = response.data;
+        const currentUserData = userData.find(
+          (user) => user.email === getCookie("email")
+        );
+        console.log("currentUserData:", currentUserData);
+        setCurrentUser(currentUserData ?? null);
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   return (
-    <>
-      <div>
-        {[...Array(5)].map((_, index) => (
+    <div className="space-y-2">
+      {users
+        .filter((user) => user.id !== currentUser?.id)
+        .map((user, index) => (
           <div
             key={index}
-            className="flex gap-2 border rounded-lg py-1.5 px-1.5 items-center justify-between mb-2"
+            className="flex items-center justify-between border rounded-lg py-1.5 px-1.5 mb-2"
           >
-            <div className="flex gap-2 items-center">
-              <div className="bg-zinc-200 rounded-full p-2.5 border border-red-500">
-                <Image src={User} alt="profile" className="size-4" />
-              </div>
-              <p>user{index + 2}</p>
-            </div>
+            <a className="flex items-center gap-1" href="/profile">
+              <Image
+                src={user.profilePicture || User}
+                alt="profile"
+                width={30}
+                height={30}
+                priority
+                className="2xl:w-8 2xl:h-8 rounded-full border border-red-700 flex-shrink-0"
+              />
+              <p className="text-xs">{user.name}</p>
+            </a>
             <Button
-              variant={"secondary"}
-              size={"sm"}
-              className="flex rounded-lg gap-1"
+              variant="secondary"
+              size="sm"
+              className="flex rounded-lg gap-1 px-2"
             >
-              <p className="text-sm">Seguir</p> <UserPlus2 className="size-4" />
+              <p className="text-xs font-medium flex">Seguir✔</p>
             </Button>
           </div>
         ))}
-      </div>
-    </>
+    </div>
   );
 };

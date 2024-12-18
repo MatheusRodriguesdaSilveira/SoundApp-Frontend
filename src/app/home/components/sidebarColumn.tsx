@@ -32,13 +32,13 @@ export const SideBarColumn = () => {
   return (
     <>
       <div className="flex relative">
-        <div className="fixed w-[300px] h-full right-0 border-l-2">
+        <div className="fixed 2xl:w-[300px] xl:w-[200px] h-full right-0 border-l-2">
           <div className="mx-4 border-x-2 border-b-2 rounded-b-2xl p-5 h-[300px] mb-10">
             <div className="flex justify-center gap-1.5 pb-5">
-              <ChartNoAxesColumnIncreasing className="size-6 text-red-500" />
-              <h1 className="font-bold text-xl">Em destaque</h1>
+              <ChartNoAxesColumnIncreasing className="2xl:size-6 xl:size-5 text-red-500" />
+              <h1 className="font-bold 2xl:text-xl xl:text-sm">Em destaque</h1>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 xl:text-sm">
               <div className="flex gap-1">
                 <p className="p-2 bg-zinc-200 dark:bg-zinc-900 w-full rounded">
                   <span className="text-red-500">#</span> Tech
@@ -63,38 +63,22 @@ export const SideBarColumn = () => {
           </div>
 
           <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <div className="mx-4 border-2 rounded-2xl p-5 h-full">
+            <div className="mx-4 border-2 rounded-2xl 2xl:p-5 xl:p-2 h-full">
               <div className="flex justify-center gap-1 pb-5 items-center">
-                <h1 className="font-bold text-lg">Sugestões Para Você</h1>
+                <h1 className="font-bold 2xl:text-lg xl:text-xs">
+                  Sugestões Para Você
+                </h1>
                 <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm" className="w-9 p-0">
+                  <Button variant="ghost" size="sm" className="2xl:w-9 p-0">
                     {isOpen ? (
-                      <CircleChevronDown className="size-5 text-red-500" />
+                      <CircleChevronDown className="2xl:size-5 text-red-500" />
                     ) : (
-                      <CircleChevronUp className="size-5" />
+                      <CircleChevronUp className="2xl:size-5" />
                     )}
                   </Button>
                 </CollapsibleTrigger>
               </div>
               <div className="flex flex-col gap-3">
-                <div className="flex gap-2 border rounded-lg py-1.5 px-1.5 items-center justify-between">
-                  <a href="/profile">
-                    <div className="flex gap-2 items-center">
-                      <div className="bg-zinc-300 rounded-full p-2.5 border border-red-500">
-                        <Image src={User} alt="profile" className="size-4" />
-                      </div>
-                      <p>user1</p>
-                    </div>
-                  </a>
-                  <Button
-                    variant={"secondary"}
-                    size={"sm"}
-                    className="flex rounded-lg gap-1"
-                  >
-                    <p className="text-sm">Seguir</p>{" "}
-                    <UserPlus2 className="size-4" />
-                  </Button>
-                </div>
                 {isOpen ? (
                   ""
                 ) : (

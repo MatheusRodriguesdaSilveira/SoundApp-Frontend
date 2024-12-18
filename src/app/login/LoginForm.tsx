@@ -116,7 +116,7 @@ const LoginForm = () => {
           </div>
           <Button
             type="submit"
-            className="w-full relative overflow-hidden group"
+            className="w-full relative overflow-hidden group bg-red-500 hover:bg-red-500"
           >
             <span className="absolute bottom-0 left-0 w-full h-full transition-all duration-500 ease-in-out -translate-x-full bg-rose-700 rounded-md group-hover:translate-x-0"></span>
             <span className="flex items-center justify-center relative w-full text-white group-hover:text-white">
