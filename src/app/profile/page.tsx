@@ -399,7 +399,7 @@ const ProfilePage = () => {
 
                 <DialogDescription></DialogDescription>
               </DialogHeader>
-              <form className="gap-5 flex flex-col">
+              <form className="flex flex-col">
                 <div className="flex justify-between">
                   <Label className="text-left font-bold text-zinc-200">
                     {post.title}
@@ -421,9 +421,9 @@ const ProfilePage = () => {
                   />
                 </Label>
 
-                <Label className="text-left text-zinc-600 text-lg">
+                <Label className="text-left text-zinc-600 text-lg mt-1">
                   {post.description ? (
-                    <div className="list-disc list-inside">
+                    <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto">
                       {post.description.split("\n").map((item, index) => (
                         <p key={index}>{item}</p>
                       ))}

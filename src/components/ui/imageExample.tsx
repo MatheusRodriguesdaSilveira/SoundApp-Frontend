@@ -1,4 +1,4 @@
-import { Heart, PartyPopper } from "lucide-react";
+import { CalendarDays, Heart, PartyPopper } from "lucide-react";
 import Image from "next/image";
 import Template from "/public/template.png";
 import UserProfile from "/public/user.png";
@@ -115,9 +115,26 @@ export const ImageTemplate = () => {
               </div>
               <div className="flex flex-col 2xl:w-[500px] xl:w-[500px] lg:w-[500px] max-w-7xl sm:p-6 lg:p-0">
                 <p className="text-lg font-medium">{(post.user as any).name}</p>
-                <p className="text-lg text-zinc-500 flex ">
-                  {post.title || "Postagem"}
-                </p>
+                <div className="flex justify-between">
+                  <p className="text-lg text-zinc-500 flex ">
+                    {post.title || "Postagem"}
+                  </p>
+                  <p className="flex text-lg font-medium mb-1">
+                    <button className="group relative mr-3">
+                      <CalendarDays className="cursor-pointer hover:text-red-500" />
+                      <span
+                        className="absolute -top-10 left-[200%] -translate-x-[50%] 
+                        z-20 origin-left scale-0 px-3 rounded-lg border 
+                        border-gray-300 bg-white py-1 text-sm font-bold
+                        shadow-md transition-all duration-300 ease-in-out 
+                        group-hover:scale-100 text-zinc-500"
+                      >
+                        {format(new Date(post.createdAt), "dd/MM/yyyy")}
+                      </span>
+                    </button>
+                  </p>
+                </div>
+
                 <div className="w-full 2xl:h-96 xl:h-72 md:h-56 lg:h-72 relative rounded-3xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
                   <Image
                     priority
