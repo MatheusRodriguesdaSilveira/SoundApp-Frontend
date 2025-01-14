@@ -32,7 +32,7 @@ export const SideBarColumn = () => {
   return (
     <>
       <div className="flex relative">
-        <div className="fixed 2xl:w-[300px] xl:w-[200px] h-full right-0 border-l-2">
+        <div className="fixed 2xl:w-[300px] xl:w-[300px] h-full right-0 border-l-2">
           <div className="mx-4 border-x-2 border-b-2 rounded-b-2xl p-5 h-[300px] mb-10">
             <div className="flex justify-center gap-1.5 pb-5">
               <ChartNoAxesColumnIncreasing className="2xl:size-6 xl:size-5 text-red-500" />

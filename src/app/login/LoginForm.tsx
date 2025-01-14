@@ -74,23 +74,22 @@ const LoginForm = () => {
 
   return (
     <Card className="p-6 mx-auto flex flex-col items-center max-w-md relative overflow-hidden z-10 rounded-lg shadow-md before:w-24 before:h-24 before:absolute before:bg-red-700 before:rounded-full before:-z-10 before:blur-2xl after:w-32 after:h-32 after:absolute after:bg-zinc-800 after:rounded-full after:-z-10 after:blur-xl after:top-24 after:-right-12">
-      <CodeXml className="size-8" />
       <form onSubmit={handleLogin}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 mb-3">
             <CircleUser className="text-red-500 size-10" />
             <h1 className="text-3xl">Login</h1>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="dark:text-zinc-300 text-zinc-900 font-semibold">
             {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
             Faça o seu login logo abaixo com os seus dados cadastrados.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 w-full">
           <div className="relative text-zinc-400">
-            <AtSign className="absolute left-2 top-1/2 transform -translate-y-1/2 text-zinc-400 size-5" />
+            <AtSign className="absolute left-2 top-1/2 transform -translate-y-1/2 text-zinc-900 dark:text-zinc-400 size-5" />
             <Input
-              className="px-10 "
+              className="pl-8 w-full dark:border-zinc-700 border-zinc-900"
               type="email"
               placeholder="Digite seu email..."
               name="email"
@@ -101,9 +100,9 @@ const LoginForm = () => {
           </div>
 
           <div className="relative">
-            <Lock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-zinc-400 size-5" />
+            <Lock className="absolute left-2 top-1/2 transform -translate-y-1/2 text-zinc-900 dark:text-zinc-400 size-5" />
             <Input
-              className="px-10 "
+              className="pl-8 w-full dark:border-zinc-700 border-zinc-900"
               type="password"
               placeholder="Digite sua senha..."
               name="password"

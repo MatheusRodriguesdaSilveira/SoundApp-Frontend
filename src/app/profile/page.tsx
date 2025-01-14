@@ -217,14 +217,14 @@ const ProfilePage = () => {
           loading="lazy"
         />
 
-        <div className="mx-16">
+        <div className="2xl:mx-16 xl:mx-4">
           <div className="flex-col flex gap-3">
             <div className="flex flex-col">
-              <p className="text-2xl font-medium">
+              <p className="2xl:text-2xl xl:text-xl font-medium">
                 {userData.name || "Nome não disponível"}
               </p>
             </div>
-            <div className="text-sm font-medium text-zinc-500 max-w-2xl">
+            <div className="text-sm font-medium text-zinc-950 dark:text-zinc-500 xl:max-w-sm 2xl:max-w-xl">
               {userData.descriptionProfile ? (
                 <div className="list-disc list-inside">
                   {userData.descriptionProfile
@@ -237,7 +237,7 @@ const ProfilePage = () => {
                 "Descrição não disponível"
               )}
             </div>
-            <div className="text-sm font-medium text-blue-500/60 ">
+            <div className="text-sm font-medium text-blue-700 dark:text-blue-500/60 ">
               <div className="flex items-center gap-1">
                 <Globe className="size-4" />
                 <Link
@@ -280,16 +280,16 @@ const ProfilePage = () => {
         <DropdownMenuSeparator className="xl:w-6/12 2xl:w-5/12" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 2xl:w-[1200px] xl:w-[700px] lg:w-[700px] max-w-7xl mx-auto sm:p-6 lg:p-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 2xl:w-[1200px] xl:w-[650px] lg:w-[700px] mx-auto sm:p-6 lg:p-0">
         {post.map((post, index) => (
           <Dialog key={post.id}>
             <DialogTrigger onClick={() => handleSelectPost(post.id)} asChild>
-              <div className="w-full 2xl:h-96 xl:h-72 md:h-56 lg:h-72 relative rounded-3xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
+              <div className="w-full 2xl:h-96 xl:h-80 md:h-56 lg:h-72 relative rounded-3xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
                 <Image
                   src={post.imageUrl || TemplateError}
                   alt="Post"
                   width={400}
-                  height={400}
+                  height={200}
                   style={{ objectFit: "contain" }}
                   className="w-full h-full"
                   priority
@@ -400,8 +400,8 @@ const ProfilePage = () => {
                 <DialogDescription></DialogDescription>
               </DialogHeader>
               <form className="flex flex-col">
-                <div className="flex justify-between">
-                  <Label className="text-left font-bold text-zinc-200">
+                <div className="flex justify-between mb-1">
+                  <Label className="text-left font-bold text-zinc-950 dark:text-zinc-200">
                     {post.title}
                   </Label>
                   <Label className="text-right">
@@ -423,7 +423,7 @@ const ProfilePage = () => {
 
                 <Label className="text-left text-zinc-600 text-lg mt-1">
                   {post.description ? (
-                    <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto">
+                    <div className="flex flex-col gap-1 2xl:max-h-[300px] xl:max-h-[150px] overflow-y-auto">
                       {post.description.split("\n").map((item, index) => (
                         <p key={index}>{item}</p>
                       ))}

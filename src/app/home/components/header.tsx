@@ -88,11 +88,11 @@ export const NavBar = () => {
   return (
     <>
       <div className="flex relative z-50">
-        <div className="fixed 2xl:w-[300px] xl:w-[200px] lg:w-[250px] h-full p-10 border-r-2">
+        <div className="fixed 2xl:w-[300px] xl:w-[300px] lg:w-[250px] h-full p-10 border-r-2">
           <LogoHeader />
           <DropdownMenuSeparator />
 
-          <ul className="lg:text-sm lg:p-5 xl:p-1 xl:text-sm 2xl:p-5 2xl:text-lg">
+          <ul className="lg:text-sm lg:p-5 xl:p-5  xl:text-base 2xl:p-5 2xl:text-lg">
             <li className="flex xl:gap-1 2xl:gap-2 mb-5">
               <Home className="2xl:size-7 xl:size-5 lg:size-5" />
               <a
@@ -132,34 +132,37 @@ export const NavBar = () => {
           </ul>
           <DropdownMenuSeparator />
 
-          <div className="xl:m-0 2xl:m-1">
-            <div className="flex xl:gap-0 xl:my-1 2xl:gap-2 2xl:my-5 hover:bg-zinc-200 dark:hover:bg-zinc-900 w-[200px] rounded-md px-2 py-2">
-              <ModeThemeHeader />{" "}
-            </div>
-          </div>
-
-          <div className="m-1">
-            <a href="/profile" className="">
-              <div className="flex gap-2 items-center my-5 hover:bg-zinc-200 dark:hover:bg-zinc-900 w-[200px] rounded-md px-2 py-2">
-                <Image
-                  src={userData.profilePicture || UserProfile}
-                  alt="profile"
-                  className="2xl:w-8 2xl:h-8 xl:w-7 xl:h-7 lg:w-7 lg:h-7 rounded-full border border-red-700 flex-shrink-0"
-                  width={500}
-                  height={500}
-                  priority
-                />
-                <p>Perfil</p>
+          <ul className="xl:m-1">
+            <li className="xl:mx-3 2xl:m-1">
+              <div className="flex xl:gap-0 xl: 2xl:gap-2 2xl:my-5 hover:bg-zinc-200 dark:hover:bg-zinc-900     xl:w-[200px] 2xl:w-[200px] rounded-md px-2 py-2">
+                <ModeThemeHeader />
               </div>
-            </a>
-          </div>
+            </li>
+
+            <li className="xl:mx-2">
+              <a href="/profile" className="">
+                <div className="flex gap-2 items-center my-5 hover:bg-zinc-200 dark:hover:bg-zinc-900     xl:w-[200px] 2xl:w-[200px] rounded-md px-2 py-2">
+                  <Image
+                    src={userData.profilePicture || UserProfile}
+                    alt="profile"
+                    className="2xl:w-8 2xl:h-8 xl:w-7 xl:h-7 lg:w-7 lg:h-7 rounded-full border border-red-700 flex-shrink-0"
+                    width={500}
+                    height={500}
+                    priority
+                  />
+                  <p className="xl:text-sm">Perfil</p>
+                </div>
+              </a>
+            </li>
+          </ul>
 
           <DropdownMenuSeparator />
+
           {/* Adicionar Postagem */}
-          <div className="xl:mt-5 2xl:mt-12">
+          <div className="xl:mt-0 xl:mx-5 2xl:mt-12">
             <FormPost />
           </div>
-          <div className="absolute bottom-0 flex gap-5 xl:mb-0 2xl:mb-10">
+          <div className="absolute bottom-0 flex gap-5 xl:mb-5 2xl:mb-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">

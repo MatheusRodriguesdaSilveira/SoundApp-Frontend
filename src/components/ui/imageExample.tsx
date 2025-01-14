@@ -51,7 +51,6 @@ export const ImageTemplate = () => {
           },
         });
 
-        console.log(response.data.map((user: { user: any }) => user.user));
         const users = response.data.map(
           (user: { user: any; name: string; profilePicture: string }) =>
             user.user
@@ -110,7 +109,7 @@ export const ImageTemplate = () => {
                   style={{ objectFit: "cover" }}
                   src={(post.user as any).profilePicture || UserProfile}
                   alt="profile"
-                  className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 h-2 w-2 rounded-full border border-red-500 "
+                  className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 h-2 w-2 rounded-full border border-red-500"
                 />
               </div>
               <div className="flex flex-col 2xl:w-[500px] xl:w-[500px] lg:w-[500px] max-w-7xl sm:p-6 lg:p-0">

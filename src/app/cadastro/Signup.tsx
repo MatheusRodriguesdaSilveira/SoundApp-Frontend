@@ -32,10 +32,10 @@ const SignupForm = () => {
     name,
   }) => (
     <div className="relative w-full">
-      <Icon className="absolute left-2 top-2 text-zinc-400 size-5" />
+      <Icon className="absolute left-2 top-2 text-zinc-900 dark:text-zinc-400 size-5" />
       <Input
         type={type}
-        className="pl-8 w-full"
+        className="pl-8 w-full dark:border-zinc-700 border-zinc-900"
         name={name}
         placeholder={placeholder}
         required
@@ -86,15 +86,14 @@ const SignupForm = () => {
   }
 
   return (
-    <Card className="p-6 mx-auto flex flex-col items-center max-w-md relative overflow-hidden z-10 rounded-lg shadow-md before:w-24 before:h-24 before:absolute before:bg-red-700 before:rounded-full before:-z-10 before:blur-2xl after:w-32 after:h-32 after:absolute after:bg-zinc-800 after:rounded-full after:-z-10 after:blur-xl after:top-24 after:-right-12">
-      <CodeXml className="size-8" />
+    <Card className="h-[400px] p-6 mx-auto flex flex-col items-center max-w-md relative overflow-hidden z-10 rounded-lg shadow-md before:w-24 before:h-24 before:absolute before:bg-red-700 before:rounded-full before:-z-10 before:blur-2xl after:w-32 after:h-32 after:absolute after:bg-zinc-800 after:rounded-full after:-z-10 after:blur-xl after:top-24 after:-right-12">
       <form onSubmit={handleRegister}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 mb-3">
             <UserPlus className="text-red-500 size-10" />
             <h1 className="text-3xl">Cadastrar-se</h1>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="dark:text-zinc-300 text-zinc-900 font-semibold">
             {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
             Faça o seu cadastro logo abaixo com os seus dados pessoais.
           </CardDescription>

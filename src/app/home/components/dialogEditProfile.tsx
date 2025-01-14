@@ -164,7 +164,7 @@ export function DialogEditProfile() {
           </Button>
         </div>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="xl:max-h-[700px] 2xl:max-h-[800px]">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogDescription>
@@ -228,7 +228,7 @@ export function DialogEditProfile() {
             className="col-span-3 w-full mb-5"
           />
           <div className="flex items-center justify-center">
-            <Label className="relative my-5 w-[300px] h-[300px] flex items-center justify-center border border-dashed border-zinc-700 rounded-full cursor-pointer mb-4">
+            <Label className="relative  2xl:w-[300px] 2xl:h-[300px] xl:w-[200px] xl:h-[200px] flex items-center justify-center border border-dashed border-zinc-700 rounded-full cursor-pointer mb-4">
               <Input
                 type="file"
                 onChange={handleFileChange}

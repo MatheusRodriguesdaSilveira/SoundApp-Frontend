@@ -26,10 +26,10 @@ export default function TabsDemo() {
 
   return (
     <>
-      <div className="m-10 mx-20 flex items-end justify-end">
+      <div className="2xl:m-10 2xl:mx-20 xl:m-2 xl:mx-10 flex items-end justify-end">
         <ModeTheme />
       </div>
-      <div className="flex flex-col items-center justify-center m-20">
+      <div className="flex flex-col items-center justify-center 2xl:m-20">
         <Logo />
         <Tabs
           defaultValue="cadastro"
@@ -45,11 +45,11 @@ export default function TabsDemo() {
           {/* Conteúdo de Login */}
           <TabsContent value="login">
             <LoginForm />
-            <div className="justify-center items-center flex flex-col m-5">
+            <div className="justify-center items-center flex flex-col m-5 font-semibold">
               <button
                 type="button"
                 onClick={() => setActiveTab("cadastro")}
-                className="text-zinc-200 hover:scale-95 duration-300 hover:text-red-500"
+                className="dark:text-zinc-200 text-zinc-900 hover:scale-95 duration-300 hover:text-red-500"
               >
                 Não possui uma conta? Crie uma agora!
               </button>
@@ -59,11 +59,11 @@ export default function TabsDemo() {
           {/* Conteúdo de Cadastro */}
           <TabsContent value="cadastro">
             <SignupForm />
-            <div className="justify-center items-center flex flex-col m-5">
+            <div className="justify-center items-center flex flex-col m-5 font-semibold">
               <button
                 type="button"
                 onClick={() => setActiveTab("login")}
-                className="text-zinc-200 hover:scale-95 duration-300 hover:text-red-500"
+                className="dark:text-zinc-200 text-zinc-900 hover:scale-95 duration-300 hover:text-red-500"
               >
                 Já possui uma conta? Clique aqui!
               </button>

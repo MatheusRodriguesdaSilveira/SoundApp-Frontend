@@ -24,7 +24,7 @@ export const ButtonScrollToTop = () => {
   return (
     <>
       {isVisible && (
-        <div className="fixed items-end justify-end right-[400px] bottom-5">
+        <div className="fixed items-end justify-end xl:right-[310px] 2xl:right-[400px] bottom-5">
           <button
             onClick={scrollToTop}
             className="bg-zinc-200 dark:bg-zinc-900/40 rounded-full p-3 cursor-pointer border-2 border-dashed border-zinc-400 dark:border-zinc-700 hover:scale-95 duration-500"
