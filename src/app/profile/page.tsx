@@ -30,7 +30,7 @@ import { Check, Globe, Linkedin, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import FormData from "form-data";
 
@@ -207,15 +207,17 @@ const ProfilePage = () => {
       <SideBarColumn />
       <NavBar />
       <div className="relative m-10 flex justify-center items-center">
-        <Image
-          width={900}
-          height={500}
-          style={{ objectFit: "cover" }}
-          src={userData.profilePicture || UserProfile}
-          alt="profile"
-          className="2xl:w-40 2xl:h-40 xl:w-32 xl:h-32 lg:w-24 lg:h-24 md:w-24 md:h-24 h-2 w-2 rounded-full border-2 border-red-500 flex-shrink-0"
-          loading="lazy"
-        />
+        {userData && (
+          <Image
+            width={160}
+            height={160}
+            style={{ objectFit: "cover" }}
+            src={userData.profilePicture || "/default-profile.png"}
+            alt={userData.name || "Foto de perfil"}
+            className="2xl:w-40 2xl:h-40 xl:w-32 xl:h-32 lg:w-24 lg:h-24 md:w-24 md:h-24 h-2 w-2 rounded-full border-2 border-red-500 flex-shrink-0"
+            loading="lazy"
+          />
+        )}
 
         <div className="2xl:mx-16 xl:mx-4">
           <div className="flex-col flex gap-3">
@@ -262,13 +264,13 @@ const ProfilePage = () => {
           </div>
           <div className="flex gap-5 font-semibold mt-5">
             <p className="text-zinc-700 dark:text-zinc-200 leading-[10px]">
-              {0} publicações
+              {post.length} publicações
             </p>
             <p className="text-zinc-700 dark:text-zinc-200 leading-[10px]">
               {0} seguidores
             </p>
             <p className="text-zinc-700 dark:text-zinc-200 leading-[10px]">
-              {311} seguindo
+              {0} seguindo
             </p>
           </div>
         </div>
@@ -387,7 +389,10 @@ const ProfilePage = () => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeletePost}>
+                            <AlertDialogAction
+                              onClick={handleDeletePost}
+                              className="bg-red-500 hover:bg-red-700 text-zinc-100"
+                            >
                               Deletar <Trash2 />
                             </AlertDialogAction>
                           </AlertDialogFooter>

@@ -88,7 +88,7 @@ export const FormPost = () => {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="2xl:w-[200px] lg:w-[170px] border border-red-500 border-dashed py-6 hover:bg-zinc-200 dark:hover:bg-zinc-900/50 lg:my-5"
+          className="2xl:w-[170px] lg:w-[170px] border border-red-500 border-dashed py-6 hover:bg-zinc-200 dark:hover:bg-zinc-900/50 lg:my-5"
           variant="outline"
         >
           <div className="flex gap-1 items-center">

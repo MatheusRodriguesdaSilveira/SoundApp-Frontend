@@ -84,13 +84,12 @@ export const ImageTemplate = () => {
 
   if (!userData) {
     return (
-      <div className="flex flex-col justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center z-0">
         <h1 className="text-zinc-400 m-2">Carregando...</h1>
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-red-500" />
       </div>
     );
   }
-
   return (
     <div className="flex flex-col items-center">
       {info

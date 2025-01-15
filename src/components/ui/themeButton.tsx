@@ -51,14 +51,16 @@ export function ModeThemeHeader() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border-none" asChild>
-        <div className="flex 2xl:gap-2 xl:gap-1">
+        <div className="flex gap-2">
           <button className="relative flex items-center justify-center">
-            <Moon className="absolute 2xl:h-7 2xl:w-7 xl:h-5 xl:w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <Moon className="absolute 2xl:h-7 2xl:w-7 xl:h-4 xl:w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <Sun className="2xl:h-7 2xl:w-7 xl:h-4 xl:w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <span className="sr-only">Escolha um tema</span>
           </button>
-          <button className="lg:text-xs xl:text-sm 2xl:base block mt-0.5 font-medium dark:text-zinc-200 text-zinc-800">
-            Alternar exibição
+          <button className="items-center dark:text-zinc-200">
+            <span className="block font-medium text-zinc-800 dark:text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 dark:before:bg-zinc-200 before:bg-zinc-800 before:transition-all before:duration-300 hover:before:w-full">
+              Alternar tema
+            </span>
           </button>
         </div>
       </DropdownMenuTrigger>

@@ -37,7 +37,6 @@ export const UserTemplate = () => {
         const currentUserData = userData.find(
           (user) => user.email === getCookie("email")
         );
-        console.log("currentUserData:", currentUserData);
         setCurrentUser(currentUserData ?? null);
       } catch (error) {
         console.error("Error loading user data:", error);

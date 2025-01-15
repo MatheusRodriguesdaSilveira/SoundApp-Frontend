@@ -50,6 +50,14 @@ const HomePage = () => {
     fetchUserData();
   }, [router]);
 
+  if (!userData) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen z-0">
+        <h1 className="text-zinc-400 m-2">Carregando...</h1>
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-red-500" />
+      </div>
+    );
+  }
   return (
     <>
       <NavBar />
