@@ -61,7 +61,7 @@ export const FormPost = () => {
       await api.post("/post", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, // Inclua o token de autenticação, se necessário
+          Authorization: `Bearer ${token}`,
         },
       });
 

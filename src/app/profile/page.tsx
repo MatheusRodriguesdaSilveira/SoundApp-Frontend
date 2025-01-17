@@ -25,7 +25,7 @@ import {
 import Image from "next/image";
 import TemplateError from "/public/imageError.svg";
 import UserProfile from "/public/user.png";
-import { Check, Globe, Linkedin, Pencil, Trash2 } from "lucide-react";
+import { Check, Globe, Heart, Linkedin, Pencil, Trash2 } from "lucide-react";
 
 import Link from "next/link";
 import { api } from "@/services/api";
@@ -58,6 +58,8 @@ interface UserData {
   title: string;
   imageUrl: string;
   description: string;
+  likes: string;
+  comments: string;
 }
 
 const ProfilePage = () => {
@@ -425,6 +427,11 @@ const ProfilePage = () => {
                     priority
                   />
                 </Label>
+                <div className="flex gap-2 text-zinc-500">
+                  <div className="flex items-center gap-1">
+                    <div>{post.comments.length}</div>
+                  </div>
+                </div>
 
                 <Label className="text-left text-zinc-600 text-lg mt-1">
                   {post.description ? (
