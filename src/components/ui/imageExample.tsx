@@ -37,6 +37,7 @@ import { getCookie } from "cookies-next";
 import FormData from "form-data";
 import { api } from "@/services/api";
 import { format } from "date-fns";
+import { ButtonComment } from "./buttonComment";
 
 interface UserData {
   user: string;
@@ -56,22 +57,6 @@ interface UserData {
 }
 
 export const ImageTemplate = () => {
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const handleAddEmoji = (emoji: string) => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-
-      textarea.value = text.slice(0, start) + emoji + text.slice(end);
-
-      textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
-
-      textarea.focus();
-    }
-  };
   const router = useRouter();
 
   const [likesCount, setLikesCount] = useState(0);
@@ -85,6 +70,7 @@ export const ImageTemplate = () => {
   const [selectedPostId, setSelectedPostId] = useState<string>("");
 
   const [comment, setComment] = useState("");
+  const [selectedEmoji, setSelectedEmoji] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -149,6 +135,12 @@ export const ImageTemplate = () => {
       setComment("");
     }
   };
+
+  const handleAddEmoji = (emoji: string) => {
+    setSelectedEmoji(emoji);
+    setComment(comment + emoji);
+  };
+
   const handleLikeButton = () => {
     if (!isLiked) {
       setLikesCount(likesCount + 1);
@@ -189,7 +181,7 @@ export const ImageTemplate = () => {
                     height={200}
                     style={{ objectFit: "cover" }}
                     src={(post.user as any).profilePicture || UserProfile}
-                    alt="profile"
+                    alt={(post.user as any).name}
                     className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 h-2 w-2 rounded-full border border-red-500"
                   />
                 </div>
@@ -201,7 +193,7 @@ export const ImageTemplate = () => {
                     <p className="text-lg text-zinc-500 flex ">
                       {post.title || "Postagem"}
                     </p>
-                    <p className="flex text-lg font-medium mb-1">
+                    <div className="flex text-lg font-medium mb-1">
                       <button className="group relative mr-3">
                         <CalendarDays className="cursor-pointer hover:text-red-500" />
                         <span
@@ -214,14 +206,14 @@ export const ImageTemplate = () => {
                           {format(new Date(post.createdAt), "dd/MM/yyyy")}
                         </span>
                       </button>
-                    </p>
+                    </div>
                   </div>
 
                   <div className="w-full 2xl:h-96 xl:h-72 md:h-56 lg:h-72 relative rounded-3xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
                     <Image
                       priority
                       src={post.imageUrl || Template}
-                      alt="example"
+                      alt="Postagem"
                       width={500}
                       height={500}
                       style={{ objectFit: "contain" }}
@@ -230,7 +222,7 @@ export const ImageTemplate = () => {
                   </div>
 
                   <div className="py-2 text-zinc-500">
-                    <div className="flex mb-2 gap-2 text-zinc-500">
+                    <div className="flex mb-2 gap-1 text-zinc-500">
                       <div className="flex items-center gap-1">
                         <div>{likesCount}</div>
                         <button
@@ -254,184 +246,8 @@ export const ImageTemplate = () => {
                         </button>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Dialog>
-                          <div>{post.comments.length}</div>
-                          <DialogTrigger onClick={handleSelectPost} asChild>
-                            <button
-                              className="group relative"
-                              aria-label="Abrir comentários"
-                            >
-                              <MessageCircle className="cursor-pointer hover:text-blue-500" />
-                              <span
-                                className="absolute -top-10 left-[100%] -translate-x-[50%] 
-                        z-20 origin-left scale-0 px-3 rounded-lg border 
-                        border-gray-300 bg-white py-1 text-sm font-bold
-                        shadow-md transition-all duration-300 ease-in-out 
-                        group-hover:scale-100"
-                              >
-                                Comment
-                              </span>
-                            </button>
-                          </DialogTrigger>
-
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Comentários</DialogTitle>
-                              <DialogDescription>
-                                Veja o que estão falando.
-                              </DialogDescription>
-                            </DialogHeader>
-
-                            <form
-                              onSubmit={handleCreateComment}
-                              className="mb-4"
-                            >
-                              <Label
-                                htmlFor="comment"
-                                className="block text-sm font-medium mb-2"
-                              >
-                                Adicionar comentário
-                              </Label>
-                              <div className="relative">
-                                <Textarea
-                                  onChange={(event) =>
-                                    setComment(event.target.value)
-                                  }
-                                  id="comment"
-                                  ref={textareaRef}
-                                  className="rounded-lg focus:outline-none w-full p-2 pr-[100px]"
-                                  placeholder="Escreva seu comentário..."
-                                />
-                                <Button
-                                  size={"sm"}
-                                  type="submit"
-                                  className="w-[70px] h-[30px] absolute right-2 top-16 rounded-lg text-white font-semibold hover:bg-red-700 hover:scale-95"
-                                >
-                                  Publicar
-                                </Button>
-
-                                <Select onValueChange={handleAddEmoji}>
-                                  <SelectTrigger className="absolute right-16 top-16 w-[50px] mr-2 border-none flex items-center justify-center focus:ring-2 focus:ring-transparent">
-                                    <SmilePlus />
-                                  </SelectTrigger>
-
-                                  <SelectContent>
-                                    <SelectGroup className="grid grid-cols-5 gap-2">
-                                      {/* Emojis de Expressões */}
-                                      <SelectItem value="😀">😀</SelectItem>
-                                      <SelectItem value="😅">😅</SelectItem>
-                                      <SelectItem value="😂">😂</SelectItem>
-                                      <SelectItem value="😍">😍</SelectItem>
-                                      <SelectItem value="😎">😎</SelectItem>
-                                      <SelectItem value="😢">😢</SelectItem>
-                                      <SelectItem value="😡">😡</SelectItem>
-                                      <SelectItem value="🤔">🤔</SelectItem>
-                                      <SelectItem value="🥳">🥳</SelectItem>
-                                      <SelectItem value="😴">😴</SelectItem>
-
-                                      {/* Emojis de Gestos */}
-                                      <SelectItem value="👍">👍</SelectItem>
-                                      <SelectItem value="👎">👎</SelectItem>
-                                      <SelectItem value="👏">👏</SelectItem>
-                                      <SelectItem value="🙌">🙌</SelectItem>
-                                      <SelectItem value="👌">👌</SelectItem>
-                                      <SelectItem value="🙏">🙏</SelectItem>
-                                      <SelectItem value="🤝">🤝</SelectItem>
-                                      <SelectItem value="🤟">🤟</SelectItem>
-                                      <SelectItem value="✌">✌</SelectItem>
-                                      <SelectItem value="👋">👋</SelectItem>
-
-                                      {/* Emojis de Objetos */}
-                                      <SelectItem value="❤️">❤️</SelectItem>
-                                      <SelectItem value="🔥">🔥</SelectItem>
-                                      <SelectItem value="⭐">⭐</SelectItem>
-                                      <SelectItem value="🎉">🎉</SelectItem>
-                                      <SelectItem value="📚">📚</SelectItem>
-                                      <SelectItem value="💡">💡</SelectItem>
-                                      <SelectItem value="⚽">⚽</SelectItem>
-                                      <SelectItem value="🎵">🎵</SelectItem>
-                                      <SelectItem value="📷">📷</SelectItem>
-                                      <SelectItem value="✈️">✈️</SelectItem>
-
-                                      {/* Emojis de Comida */}
-                                      <SelectItem value="🍎">🍎</SelectItem>
-                                      <SelectItem value="🍔">🍔</SelectItem>
-                                      <SelectItem value="🍕">🍕</SelectItem>
-                                      <SelectItem value="🍩">🍩</SelectItem>
-                                      <SelectItem value="🍿">🍿</SelectItem>
-                                      <SelectItem value="🍣">🍣</SelectItem>
-                                      <SelectItem value="🍦">🍦</SelectItem>
-                                      <SelectItem value="🍫">🍫</SelectItem>
-                                      <SelectItem value="🍹">🍹</SelectItem>
-                                      <SelectItem value="☕">☕</SelectItem>
-
-                                      {/* Emojis de Animais */}
-                                      <SelectItem value="🐶">🐶</SelectItem>
-                                      <SelectItem value="🐱">🐱</SelectItem>
-                                      <SelectItem value="🐭">🐭</SelectItem>
-                                      <SelectItem value="🐹">🐹</SelectItem>
-                                      <SelectItem value="🐼">🐼</SelectItem>
-                                      <SelectItem value="🦁">🦁</SelectItem>
-                                      <SelectItem value="🐸">🐸</SelectItem>
-                                      <SelectItem value="🐧">🐧</SelectItem>
-                                      <SelectItem value="🐳">🐳</SelectItem>
-                                      <SelectItem value="🦋">🦋</SelectItem>
-
-                                      {/* Emojis de Natureza */}
-                                      <SelectItem value="🌳">🌳</SelectItem>
-                                      <SelectItem value="🌺">🌺</SelectItem>
-                                      <SelectItem value="🌈">🌈</SelectItem>
-                                      <SelectItem value="☀️">☀️</SelectItem>
-                                      <SelectItem value="🌙">🌙</SelectItem>
-                                      <SelectItem value="🌊">🌊</SelectItem>
-                                      <SelectItem value="⛄">⛄</SelectItem>
-                                      <SelectItem value="🌌">🌌</SelectItem>
-                                      <SelectItem value="⚡">⚡</SelectItem>
-                                      <SelectItem value="🌍">🌍</SelectItem>
-                                    </SelectGroup>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </form>
-
-                            {/* Lista de comentários */}
-                            <div className="flex flex-col gap-6 h-[400px] overflow-y-auto">
-                              <div className="flex gap-3 mb-5">
-                                <Label className="text-left font-medium">
-                                  {(post.comments as any).map(
-                                    (comment: any) => (
-                                      <div
-                                        key={comment.id}
-                                        className="flex gap-2"
-                                      >
-                                        <div className="mb-8 flex-shrink-0">
-                                          <Image
-                                            priority
-                                            src={comment.user.profilePicture}
-                                            alt="example"
-                                            width={30}
-                                            height={30}
-                                            style={{ objectFit: "contain" }}
-                                            className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 h-2 w-2 rounded-full border border-red-500"
-                                          />
-                                        </div>
-
-                                        <div className="flex flex-col mt-2">
-                                          <span className="font-bold">
-                                            {comment.user.name}
-                                          </span>
-                                          <span className="text-sm text-zinc-500">
-                                            {comment.content}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    )
-                                  )}
-                                </Label>
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                        <div>{post.comments.length}</div>
+                        <ButtonComment post={post as any} />
                       </div>
                       <div className="flex items-center">
                         <button

@@ -44,6 +44,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
+import { ButtonComment } from "@/components/ui/buttonComment";
+import { ButtonCommentProps } from "@/lib/post.types";
 
 interface UserData {
   id: string;
@@ -247,7 +249,7 @@ const ProfilePage = () => {
                 <Link
                   href={userData.blogProfile || "#"}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="preload"
                 >
                   {userData.blogProfile || "Site não disponível"}
                 </Link>
@@ -257,7 +259,7 @@ const ProfilePage = () => {
                 <Link
                   href={userData.linkedinProfile || "#"}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="preload"
                 >
                   {userData.linkedinProfile || "Site não disponível"}
                 </Link>
@@ -408,11 +410,13 @@ const ProfilePage = () => {
               </DialogHeader>
               <form className="flex flex-col">
                 <div className="flex justify-between mb-1">
-                  <Label className="text-left font-bold text-zinc-950 dark:text-zinc-200">
+                  <Label className="text-left font-medium text-zinc-950 dark:text-zinc-200 w-full">
                     {post.title}
                   </Label>
                   <Label className="text-right">
-                    {format(new Date(post.createdAt), "dd/MM/yyyy HH:mm:ss")}
+                    <p className="text-zinc-500 text-xs">
+                      {format(new Date(post.createdAt), "dd/MM/yyyy HH:mm:ss")}
+                    </p>
                   </Label>
                 </div>
 
@@ -427,12 +431,27 @@ const ProfilePage = () => {
                     priority
                   />
                 </Label>
-                <div className="flex gap-2 text-zinc-500">
+                <div className="flex gap-2 text-zinc-200 mt-1">
                   <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1">
+                      <div>{0}</div>
+                      <button className="group relative">
+                        <Heart className="cursor-pointer hover:text-red-500" />
+                        <span
+                          className="absolute -top-10 left-[100%] -translate-x-[50%]
+                  z-20 origin-left scale-0 px-3 rounded-lg border
+                  border-gray-300 bg-white dark:text-zinc-500 py-1 text-sm font-bold
+                  shadow-md transition-all duration-300 ease-in-out
+                  group-hover:scale-100"
+                        >
+                          Like
+                        </span>
+                      </button>
+                    </div>
                     <div>{post.comments.length}</div>
+                    <ButtonComment post={post as any} />
                   </div>
                 </div>
-
                 <Label className="text-left text-zinc-600 text-lg mt-1">
                   {post.description ? (
                     <div className="flex flex-col gap-1 2xl:max-h-[300px] xl:max-h-[150px] overflow-y-auto">
