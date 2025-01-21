@@ -25,12 +25,22 @@ import {
 import Image from "next/image";
 import TemplateError from "/public/imageError.svg";
 import UserProfile from "/public/user.png";
-import { Check, Globe, Heart, Linkedin, Pencil, Trash2 } from "lucide-react";
+
+import {
+  Check,
+  Globe,
+  Heart,
+  Linkedin,
+  MessageCircle,
+  Pencil,
+  SmilePlus,
+  Trash2,
+} from "lucide-react";
 
 import Link from "next/link";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import FormData from "form-data";
 
@@ -44,8 +54,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
-import { ButtonComment } from "@/components/ui/buttonComment";
-import { ButtonCommentProps } from "@/lib/post.types";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
 
 interface UserData {
   id: string;
@@ -76,6 +92,9 @@ const ProfilePage = () => {
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+
+  const [comment, setComment] = useState("");
+  const [selectedEmoji, setSelectedEmoji] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -197,6 +216,39 @@ const ProfilePage = () => {
     }
   };
 
+  const handleCreateComment = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    const data = new FormData();
+    data.append("comment", comment);
+
+    try {
+      const token = getCookie("login");
+
+      const postId = selectedPostId;
+
+      const response = await api.post(`/comment/${postId}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    } finally {
+      window.location.reload();
+      setComment("");
+    }
+  };
+
+  const handleAddEmoji = (emoji: string) => {
+    setSelectedEmoji(emoji);
+    setComment(comment + emoji);
+  };
+
   if (!userData) {
     return (
       <div className="flex flex-col justify-center items-center h-screen z-0">
@@ -216,7 +268,7 @@ const ProfilePage = () => {
             width={160}
             height={160}
             style={{ objectFit: "cover" }}
-            src={userData.profilePicture || "/default-profile.png"}
+            src={userData.profilePicture || UserProfile}
             alt={userData.name || "Foto de perfil"}
             className="2xl:w-40 2xl:h-40 xl:w-32 xl:h-32 lg:w-24 lg:h-24 md:w-24 md:h-24 h-2 w-2 rounded-full border-2 border-red-500 flex-shrink-0"
             loading="lazy"
@@ -288,7 +340,7 @@ const ProfilePage = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 2xl:w-[1200px] xl:w-[650px] lg:w-[700px] mx-auto sm:p-6 lg:p-0">
         {post.map((post, index) => (
-          <Dialog key={post.id}>
+          <Dialog key={index}>
             <DialogTrigger onClick={() => handleSelectPost(post.id)} asChild>
               <div className="w-full 2xl:h-96 xl:h-80 md:h-56 lg:h-72 relative rounded-3xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
                 <Image
@@ -405,7 +457,6 @@ const ProfilePage = () => {
                     </DialogContent>
                   </Dialog>
                 </DialogTitle>
-
                 <DialogDescription></DialogDescription>
               </DialogHeader>
               <form className="flex flex-col">
@@ -434,8 +485,11 @@ const ProfilePage = () => {
                 <div className="flex gap-2 text-zinc-200 mt-1">
                   <div className="flex items-center gap-1">
                     <div className="flex items-center gap-1">
-                      <div>{0}</div>
-                      <button className="group relative">
+                      <div>{post.likes.length}</div>
+                      <button
+                        className="group relative"
+                        aria-label="Curtir postagem"
+                      >
                         <Heart className="cursor-pointer hover:text-red-500" />
                         <span
                           className="absolute -top-10 left-[100%] -translate-x-[50%]
@@ -449,19 +503,118 @@ const ProfilePage = () => {
                       </button>
                     </div>
                     <div>{post.comments.length}</div>
-                    <ButtonComment post={post as any} />
+                    <Dialog key={post.comments}>
+                      <DialogTrigger asChild>
+                        <button
+                          className="group relative"
+                          aria-label="Abrir comentários"
+                        >
+                          <MessageCircle className="cursor-pointer hover:text-blue-500" />
+                          <span
+                            className="absolute -top-10 left-[100%] -translate-x-[50%] 
+                        z-20 origin-left scale-0 px-3 rounded-lg border 
+                        border-gray-300 bg-white py-1 text-sm font-bold
+                        shadow-md transition-all duration-300 ease-in-out 
+                        group-hover:scale-100"
+                          >
+                            Comment
+                          </span>
+                        </button>
+                      </DialogTrigger>
+
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Comentários</DialogTitle>
+                          <DialogDescription>
+                            Veja o que estão falando.
+                          </DialogDescription>
+                        </DialogHeader>
+
+                        <form onSubmit={handleCreateComment} className="mb-4">
+                          <Label
+                            htmlFor="comment"
+                            className="block text-sm font-medium mb-2"
+                          >
+                            Adicionar comentário
+                          </Label>
+                          <div className="relative">
+                            <Textarea
+                              value={comment}
+                              onChange={(e) => setComment(e.target.value)}
+                              className="rounded-lg focus:outline-none w-full p-2 pr-[100px]"
+                              placeholder="Escreva seu comentário..."
+                            />
+                            <Select onValueChange={handleAddEmoji}>
+                              <SelectTrigger className="absolute right-16 top-16 w-[50px] mr-2 border-none flex items-center justify-center focus:ring-2 focus:ring-transparent">
+                                <SmilePlus />
+                              </SelectTrigger>
+
+                              <SelectContent>
+                                <SelectGroup className="grid grid-cols-5 gap-2">
+                                  {/* Emojis de Expressões */}
+                                  <SelectItem value="😀">😀</SelectItem>
+
+                                  <SelectItem value="🌍">🌍</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              size={"sm"}
+                              type="submit"
+                              className="w-[70px] h-[30px] absolute right-2 top-16 rounded-lg text-white font-semibold hover:bg-red-700 hover:scale-95"
+                            >
+                              Publicar
+                            </Button>
+                          </div>
+                        </form>
+
+                        {/* Lista de comentários */}
+                        <div className="flex flex-col gap-6 h-[400px] overflow-y-auto">
+                          <div className="flex gap-3 mb-5">
+                            <Label className="text-left font-medium">
+                              {(post.comments as any).map((comment: any) => (
+                                <div key={comment.id} className="flex gap-2">
+                                  <div className="mb-8 flex-shrink-0">
+                                    <Image
+                                      priority
+                                      src={
+                                        comment.user.profilePicture ||
+                                        UserProfile
+                                      }
+                                      alt="example"
+                                      width={30}
+                                      height={30}
+                                      style={{ objectFit: "contain" }}
+                                      className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 h-2 w-2 rounded-full border border-red-500"
+                                    />
+                                  </div>
+
+                                  <div className="flex flex-col mt-2">
+                                    <span className="font-bold">
+                                      {comment.user.name}
+                                    </span>
+                                    <span className="text-sm text-zinc-500">
+                                      {comment.content}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </Label>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
-                <Label className="text-left text-zinc-600 text-lg mt-1">
-                  {post.description ? (
-                    <div className="flex flex-col gap-1 2xl:max-h-[300px] xl:max-h-[150px] overflow-y-auto">
-                      {post.description.split("\n").map((item, index) => (
-                        <p key={index}>{item}</p>
-                      ))}
-                    </div>
-                  ) : (
-                    "Descrição não disponível"
-                  )}
+                <Label
+                  key={post.description}
+                  className="text-left text-zinc-600 text-lg mt-1"
+                >
+                  {post.description
+                    ? post.description
+                        .split("\n")
+                        .map((item, index) => <p key={index}>{item}</p>)
+                    : "Descrição não disponível"}
                 </Label>
               </form>
             </DialogContent>

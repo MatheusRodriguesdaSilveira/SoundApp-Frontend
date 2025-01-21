@@ -43,18 +43,17 @@ interface UserData {
   content: string;
 }
 
-interface ButtonCommentProps {
-  post: UserData;
+interface CommentData {
+  id: string;
+  postId: string;
+  comment: string;
+  createdAt: string;
 }
-export const ButtonComment = ({ post }: { post: UserData }) => {
-  const [userData, setUserData] = useState<UserData | null>(null);
+
+export const ButtonComment = () => {
   const [info, setInfo] = useState<UserData[]>([]);
-  const [user, setProfileUser] = useState<UserData[]>([]);
-
   const [selectedPostId, setSelectedPostId] = useState<string>("");
-
-  const [comment, setComment] = useState("");
-  const [selectedEmoji, setSelectedEmoji] = useState("");
+  const [comments, setComments] = useState<CommentData[]>([]);
 
   const router = useRouter();
 
@@ -67,19 +66,12 @@ export const ButtonComment = ({ post }: { post: UserData }) => {
           throw new Error("Token não encontrado");
         }
 
-        const response = await api.get("/posts", {
+        const response = await api.get("/info", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const users = response.data.map(
-          (user: { user: any; name: string; profilePicture: string }) =>
-            user.user
-        );
-        setProfileUser(users);
-
-        setUserData(response.data);
         setInfo(response.data || []);
       } catch (error) {
         console.error("Erro ao carregar dados do usuário:", error);
@@ -90,206 +82,77 @@ export const ButtonComment = ({ post }: { post: UserData }) => {
     fetchUserData();
   }, [router]);
 
-  const handleSelectPost = () => {
-    const postId = (info as any)[0].id;
-    setSelectedPostId(postId);
-  };
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const token = getCookie("login");
 
-  const handleCreateComment = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
+        if (!token) {
+          throw new Error("Token não encontrado");
+        }
 
-    const data = new FormData();
-    data.append("comment", comment);
+        const response = await api.get(`/comments/${selectedPostId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    try {
-      const token = getCookie("login");
+        setComments(response.data || []);
+      } catch (error) {
+        console.error("Erro ao carregar comentários:", error);
+      }
+    };
 
-      const postId = selectedPostId;
-      const response = await api.post(`/comment/${postId}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(postId);
-      console.log(response);
-    } catch (error) {
-      console.error("Error creating comment:", error);
-    } finally {
-      window.location.reload();
-      setComment("");
+    if (selectedPostId) {
+      fetchComments();
     }
+  }, [selectedPostId]);
+
+  const handleSelectPost = (post: UserData) => {
+    setSelectedPostId(post.id);
   };
 
-  const handleAddEmoji = (emoji: string) => {
-    setSelectedEmoji(emoji);
-    setComment(comment + emoji);
-  };
+  console.log(comments);
+  console.log(info);
 
   return (
-    <>
-      <Dialog>
-        <DialogTrigger onClick={handleSelectPost} asChild>
-          <button className="group relative" aria-label="Abrir comentários">
-            <MessageCircle className="cursor-pointer hover:text-blue-500" />
-            <span
-              className="absolute -top-10 left-[100%] -translate-x-[50%] 
-                                z-20 origin-left scale-0 px-3 rounded-lg border 
-                                border-gray-300 bg-white dark:text-zinc-500 py-1 text-sm font-bold
-                                shadow-md transition-all duration-300 ease-in-out 
-                                group-hover:scale-100"
-            >
-              Comment
-            </span>
-          </button>
-        </DialogTrigger>
-        <div>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Comentários</DialogTitle>
-              <DialogDescription>Veja o que estão falando.</DialogDescription>
-            </DialogHeader>
-
-            <form onSubmit={handleCreateComment} className="mb-4">
-              <Label
-                htmlFor="comment"
-                className="block text-sm font-medium mb-2"
+    <div>
+      {info.map((post) => (
+        <Dialog key={post.id}>
+          <DialogTrigger onClick={() => handleSelectPost(post)} asChild>
+            <button className="group relative" aria-label="Abrir comentários">
+              <MessageCircle className="cursor-pointer hover:text-blue-500" />
+              <span
+                className="absolute -top-10 left-[100%] -translate-x-[50%] 
+                                    z-20 origin-left scale-0 px-3 rounded-lg border 
+                                    border-gray-300 bg-white dark:text-zinc-500 py-1 text-sm font-bold
+                                    shadow-md transition-all duration-300 ease-in-out 
+                                    group-hover:scale-100"
               >
-                Adicionar comentário
-              </Label>
-              <div className="relative">
-                <Textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className="rounded-lg focus:outline-none w-full p-2 pr-[100px]"
-                  placeholder="Escreva seu comentário..."
-                />
-                <Select onValueChange={handleAddEmoji}>
-                  <SelectTrigger className="absolute right-16 top-16 w-[50px] mr-2 border-none flex items-center justify-center focus:ring-2 focus:ring-transparent">
-                    <SmilePlus />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectGroup className="grid grid-cols-5 gap-2">
-                      {/* Emojis de Expressões */}
-                      <SelectItem value="😀">😀</SelectItem>
-                      <SelectItem value="😅">😅</SelectItem>
-                      <SelectItem value="😂">😂</SelectItem>
-                      <SelectItem value="😍">😍</SelectItem>
-                      <SelectItem value="😎">😎</SelectItem>
-                      <SelectItem value="😢">😢</SelectItem>
-                      <SelectItem value="😡">😡</SelectItem>
-                      <SelectItem value="🤔">🤔</SelectItem>
-                      <SelectItem value="🥳">🥳</SelectItem>
-                      <SelectItem value="😴">😴</SelectItem>
-
-                      {/* Emojis de Gestos */}
-                      <SelectItem value="👍">👍</SelectItem>
-                      <SelectItem value="👎">👎</SelectItem>
-                      <SelectItem value="👏">👏</SelectItem>
-                      <SelectItem value="🙌">🙌</SelectItem>
-                      <SelectItem value="👌">👌</SelectItem>
-                      <SelectItem value="🙏">🙏</SelectItem>
-                      <SelectItem value="🤝">🤝</SelectItem>
-                      <SelectItem value="🤟">🤟</SelectItem>
-                      <SelectItem value="✌">✌</SelectItem>
-                      <SelectItem value="👋">👋</SelectItem>
-
-                      {/* Emojis de Objetos */}
-                      <SelectItem value="❤️">❤️</SelectItem>
-                      <SelectItem value="🔥">🔥</SelectItem>
-                      <SelectItem value="⭐">⭐</SelectItem>
-                      <SelectItem value="🎉">🎉</SelectItem>
-                      <SelectItem value="📚">📚</SelectItem>
-                      <SelectItem value="💡">💡</SelectItem>
-                      <SelectItem value="⚽">⚽</SelectItem>
-                      <SelectItem value="🎵">🎵</SelectItem>
-                      <SelectItem value="📷">📷</SelectItem>
-                      <SelectItem value="✈️">✈️</SelectItem>
-
-                      {/* Emojis de Comida */}
-                      <SelectItem value="🍎">🍎</SelectItem>
-                      <SelectItem value="🍔">🍔</SelectItem>
-                      <SelectItem value="🍕">🍕</SelectItem>
-                      <SelectItem value="🍩">🍩</SelectItem>
-                      <SelectItem value="🍿">🍿</SelectItem>
-                      <SelectItem value="🍣">🍣</SelectItem>
-                      <SelectItem value="🍦">🍦</SelectItem>
-                      <SelectItem value="🍫">🍫</SelectItem>
-                      <SelectItem value="🍹">🍹</SelectItem>
-                      <SelectItem value="☕">☕</SelectItem>
-
-                      {/* Emojis de Animais */}
-                      <SelectItem value="🐶">🐶</SelectItem>
-                      <SelectItem value="🐱">🐱</SelectItem>
-                      <SelectItem value="🐭">🐭</SelectItem>
-                      <SelectItem value="🐹">🐹</SelectItem>
-                      <SelectItem value="🐼">🐼</SelectItem>
-                      <SelectItem value="🦁">🦁</SelectItem>
-                      <SelectItem value="🐸">🐸</SelectItem>
-                      <SelectItem value="🐧">🐧</SelectItem>
-                      <SelectItem value="🐳">🐳</SelectItem>
-                      <SelectItem value="🦋">🦋</SelectItem>
-
-                      {/* Emojis de Natureza */}
-                      <SelectItem value="🌳">🌳</SelectItem>
-                      <SelectItem value="🌺">🌺</SelectItem>
-                      <SelectItem value="🌈">🌈</SelectItem>
-                      <SelectItem value="☀️">☀️</SelectItem>
-                      <SelectItem value="🌙">🌙</SelectItem>
-                      <SelectItem value="🌊">🌊</SelectItem>
-                      <SelectItem value="⛄">⛄</SelectItem>
-                      <SelectItem value="🌌">🌌</SelectItem>
-                      <SelectItem value="⚡">⚡</SelectItem>
-                      <SelectItem value="🌍">🌍</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Button
-                  size={"sm"}
-                  type="submit"
-                  className="w-[70px] h-[30px] absolute right-2 top-16 rounded-lg text-white font-semibold hover:bg-red-700 hover:scale-95"
-                >
-                  Publicar
-                </Button>
-              </div>
-            </form>
-
-            {/* Lista de comentários */}
-            <div className="flex flex-col gap-6 h-[400px] overflow-y-auto">
-              <div className="flex gap-3 mb-5">
-                {info.map((post, index) => (
-                  <Label key={index} className="text-left font-medium">
-                    {(post.comments as any).map((comment: any) => (
-                      <div key={comment.id} className="flex gap-2">
-                        <div className="mb-8 flex-shrink-0">
-                          <Image
-                            priority
-                            src={comment.user.profilePicture || UserProfile}
-                            alt={comment.user.name}
-                            width={30}
-                            height={30}
-                            style={{ objectFit: "contain" }}
-                            className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 h-2 w-2 rounded-full border border-red-500"
-                          />
-                        </div>
-
-                        <div className="flex flex-col mt-2">
-                          <span className="font-bold">{comment.user.name}</span>
-                          <span className="text-sm text-zinc-500">
-                            {comment.content}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </Label>
+                Comment
+              </span>
+            </button>
+          </DialogTrigger>
+          <div>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Comentários</DialogTitle>
+                <DialogDescription>Veja o que estão falando.</DialogDescription>
+              </DialogHeader>
+              <ul>
+                {comments.map((comment) => (
+                  <li key={comment.id}>
+                    <p>{comment.comment}</p>
+                    <p>
+                      Enviado em: {new Date(comment.createdAt).toLocaleString()}
+                    </p>
+                  </li>
                 ))}
-              </div>
-            </div>
-          </DialogContent>
-        </div>
-      </Dialog>
-    </>
+              </ul>
+            </DialogContent>
+          </div>
+        </Dialog>
+      ))}
+    </div>
   );
 };
