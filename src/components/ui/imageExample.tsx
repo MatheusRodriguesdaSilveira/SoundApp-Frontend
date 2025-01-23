@@ -31,13 +31,12 @@ import {
   SelectValue,
 } from "./select";
 
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next";
 import FormData from "form-data";
 import { api } from "@/services/api";
 import { format } from "date-fns";
-import { ButtonComment } from "./buttonComment";
 
 interface UserData {
   user: string;
@@ -55,20 +54,21 @@ interface UserData {
   comments: string;
   content: string;
   likes: string;
+  initialLiked: boolean;
 }
 
 export const ImageTemplate = () => {
   const router = useRouter();
 
-  const [likesCount, setLikesCount] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
   const [isHyped, setIsHyped] = useState(false);
+  const [liked, setLiked] = useState(false);
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [info, setInfo] = useState<UserData[]>([]);
   const [user, setProfileUser] = useState<UserData[]>([]);
 
   const [selectedPostId, setSelectedPostId] = useState<string>("");
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
 
   const [comment, setComment] = useState("");
   const [selectedEmoji, setSelectedEmoji] = useState("");
@@ -92,8 +92,14 @@ export const ImageTemplate = () => {
           (user: { user: any; name: string; profilePicture: string }) =>
             user.user
         );
-        setProfileUser(users);
 
+        const likes = response.data.map(
+          (post: { likes: string }) => post.likes
+        );
+
+        console.log("likes", likes);
+        setLiked(likes);
+        setProfileUser(users);
         setUserData(response.data);
         setInfo(response.data || []);
       } catch (error) {
@@ -107,7 +113,17 @@ export const ImageTemplate = () => {
 
   const handleSelectPost = (postId: string) => {
     setSelectedPostId(postId);
-    console.log(postId);
+    console.log(`Postagens selecionadas: ${postId}`);
+  };
+
+  const handleSelectUserPost = (userPostInfo: {
+    userId: string;
+    postId: string;
+  }) => {
+    const { userId, postId } = userPostInfo;
+    setSelectedUserId(userId);
+    setSelectedPostId(postId);
+    console.log(`id user: ${userId}, id post: ${postId}`);
   };
 
   const handleCreateComment = async (
@@ -143,15 +159,6 @@ export const ImageTemplate = () => {
     setComment(comment + emoji);
   };
 
-  const handleLikeButton = () => {
-    if (!isLiked) {
-      setLikesCount(likesCount + 1);
-    } else {
-      setLikesCount(likesCount - 1);
-    }
-    setIsLiked((prev) => !prev);
-  };
-
   const handleHypeButton = () => {
     setIsHyped((prev) => !prev);
   };
@@ -164,6 +171,28 @@ export const ImageTemplate = () => {
       </div>
     );
   }
+
+  const handleLikeButton = async (postId: string, userId: string) => {
+    try {
+      const token = getCookie("login");
+
+      const response = await api.post(
+        `/like/${postId}`,
+        { userId: userId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(response.data); // Verifique a estrutura de response.data
+      setLiked(response.data.like);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  };
 
   return (
     <>
@@ -226,26 +255,36 @@ export const ImageTemplate = () => {
                   <div className="py-2 text-zinc-500">
                     <div className="flex mb-2 gap-1 text-zinc-500">
                       <div className="flex items-center gap-1">
-                        <div>{post.likes.length}</div>
-                        <button
-                          onClick={handleLikeButton}
-                          className="group relative"
-                        >
-                          <Heart
-                            className={`cursor-pointer hover:text-red-500 ${
-                              isLiked ? "fill-current text-red-500" : ""
-                            }`}
-                          />
-                          <span
-                            className="absolute -top-10 left-[100%] -translate-x-[50%]
-                  z-20 origin-left scale-0 px-3 rounded-lg border
-                  border-gray-300 bg-white py-1 text-sm font-bold
-                  shadow-md transition-all duration-300 ease-in-out
-                  group-hover:scale-100"
+                        <Dialog>
+                          <div>{post.likes.length || 0}</div>
+                          <DialogTrigger
+                            onClick={() =>
+                              handleSelectUserPost({
+                                userId: (post.user as any).id,
+                                postId: post.id,
+                              })
+                            }
+                            asChild
                           >
-                            Like
-                          </span>
-                        </button>
+                            <button
+                              onClick={() => {
+                                const postId = post.id;
+                                const userId = (post.user as any).id;
+                                handleLikeButton(postId, userId);
+                              }}
+                              className="group relative"
+                            >
+                              <Heart
+                                className={`cursor-pointer hover:text-red-500 ${
+                                  !liked ? "fill-current text-red-500" : ""
+                                }`}
+                              />
+                              <span className="absolute -top-10 left-[100%] -translate-x-[50%] z-20 origin-left scale-0 px-3 rounded-lg border border-gray-300 bg-white py-1 text-sm font-bold shadow-md transition-all duration-300 ease-in-out group-hover:scale-100">
+                                {liked ? "Deslike" : "Like"}
+                              </span>
+                            </button>
+                          </DialogTrigger>
+                        </Dialog>
                       </div>
                       <div className="flex items-center gap-1">
                         <Dialog>
