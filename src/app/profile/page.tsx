@@ -22,10 +22,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import Image from "next/image";
-import TemplateError from "/public/imageError.svg";
-import UserProfile from "/public/user.png";
-
 import {
   Check,
   Globe,
@@ -37,12 +33,17 @@ import {
   Trash2,
 } from "lucide-react";
 
+import Image from "next/image";
+import TemplateError from "/public/imageError.svg";
+import UserProfile from "/public/user.png";
+
 import Link from "next/link";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import FormData from "form-data";
+import { jwtDecode } from "jwt-decode";
 
 import { NavBar } from "../home/components/header";
 import { SideBarColumn } from "../home/components/sidebarColumn";
@@ -64,6 +65,7 @@ import {
 } from "@/components/ui/select";
 
 interface UserData {
+  user: string;
   id: string;
   name: string;
   email: string;
@@ -72,12 +74,13 @@ interface UserData {
   linkedinProfile: string;
   profilePicture: string;
   createdAt: string;
-  updatedAt: string;
   title: string;
   imageUrl: string;
   description: string;
-  likes: string;
   comments: string;
+  content: string;
+  likes: string;
+  initialLiked: boolean;
 }
 
 const ProfilePage = () => {
@@ -89,12 +92,18 @@ const ProfilePage = () => {
 
   const [post, setPost] = useState<UserData[]>([]);
   const [selectedPostId, setSelectedPostId] = useState<string>("");
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
   const [comment, setComment] = useState("");
   const [selectedEmoji, setSelectedEmoji] = useState("");
+
+  const [liked, setLiked] = useState(false);
+  const [likesByPost, setLikesByPost] = useState<{ [key: string]: string[] }>(
+    {}
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -128,7 +137,22 @@ const ProfilePage = () => {
               new Date(a.createdAt && a.updatedAt).getTime()
           );
 
+        const likes = response.data.posts?.map(
+          (post: { id: string; likes: { id: number; userId: string }[] }) => ({
+            postId: post.id,
+            likes: post.likes.map((like: any) => like.userId),
+          })
+        );
+        const likesByPost = likes.reduce((acc: any, { postId, likes }: any) => {
+          acc[postId] = likes;
+          return acc;
+        }, {});
+
+        setLikesByPost(likesByPost);
+        setLiked(likesByPost[selectedPostId]?.includes(currentUserId));
+
         setUserData(response.data);
+
         setPost(posts);
         setTitle(posts[selectedPostId]?.title);
         setDescription(posts[selectedPostId]?.description);
@@ -139,9 +163,18 @@ const ProfilePage = () => {
     };
 
     fetchUserData();
-  }, [router]);
+  }, [selectedPostId]);
 
   const handleSelectPost = (postId: string) => {
+    setSelectedPostId(postId);
+  };
+
+  const handleSelectUserPost = (userPostInfo: {
+    userId: string;
+    postId: string;
+  }) => {
+    const { userId, postId } = userPostInfo;
+    setSelectedUserId(userId);
     setSelectedPostId(postId);
   };
 
@@ -234,8 +267,6 @@ const ProfilePage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log(response.data);
     } catch (error) {
       console.error("Error creating comment:", error);
     } finally {
@@ -257,6 +288,57 @@ const ProfilePage = () => {
       </div>
     );
   }
+  const handleLikeButton = async (postId: string, userId: string) => {
+    try {
+      const token = getCookie("login");
+
+      const newLikedState = !liked;
+
+      const response = await api.post(
+        `/like/${postId}`,
+        { userId: userId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setLiked(newLikedState);
+
+      // Atualizar o número de likes localmente
+      setLikesByPost((prevLikesByPost) => {
+        const updatedLikes = [...(prevLikesByPost[postId] || [])];
+
+        if (newLikedState) {
+          // Adicionar o usuário na lista de curtidas
+          updatedLikes.push(currentUserId);
+        } else {
+          // Remover o usuário da lista de curtidas
+          const userIndex = updatedLikes.indexOf(currentUserId);
+          if (userIndex > -1) {
+            updatedLikes.splice(userIndex, 1);
+          }
+        }
+
+        return {
+          ...prevLikesByPost,
+          [postId]: updatedLikes,
+        };
+      });
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  };
+
+  const token = getCookie("login");
+  if (token === undefined) {
+    // handle the case where the cookie is not found
+    console.error("Cookie not found");
+    return;
+  }
+  const decoded = jwtDecode(token as string) as { sub: string };
+
+  const currentUserId = decoded.sub;
 
   return (
     <>
@@ -339,8 +421,8 @@ const ProfilePage = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 2xl:w-[1200px] xl:w-[650px] lg:w-[700px] mx-auto sm:p-6 lg:p-0">
-        {post.map((post, index) => (
-          <Dialog key={index}>
+        {post.map((post) => (
+          <Dialog key={post.id}>
             <DialogTrigger onClick={() => handleSelectPost(post.id)} asChild>
               <div className="w-full 2xl:h-96 xl:h-80 md:h-56 lg:h-72 relative rounded-3xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
                 <Image
@@ -482,38 +564,52 @@ const ProfilePage = () => {
                     priority
                   />
                 </Label>
-                <div className="flex gap-2 text-zinc-200 mt-1">
+                <div className="flex gap-2 text-zinc-500 mt-1">
                   <div className="flex items-center gap-1">
                     <div className="flex items-center gap-1">
-                      <div>{post.likes.length}</div>
-                      <button
-                        className="group relative"
-                        aria-label="Curtir postagem"
-                      >
-                        <Heart className="cursor-pointer hover:text-red-500" />
-                        <span
-                          className="absolute -top-10 left-[100%] -translate-x-[50%]
-                  z-20 origin-left scale-0 px-3 rounded-lg border
-                  border-gray-300 bg-white dark:text-zinc-500 py-1 text-sm font-bold
-                  shadow-md transition-all duration-300 ease-in-out
-                  group-hover:scale-100"
+                      <Dialog>
+                        <div>{likesByPost[post.id]?.length}</div>
+                        <DialogTrigger
+                          onClick={() =>
+                            handleSelectUserPost({
+                              userId: currentUserId,
+                              postId: post.id,
+                            })
+                          }
+                          asChild
                         >
-                          Like
-                        </span>
-                      </button>
+                          <button
+                            onClick={() => {
+                              const postId = post.id;
+                              const userId = currentUserId;
+                              handleLikeButton(postId, userId);
+                            }}
+                            className="group relative"
+                          >
+                            {/* Verifica se o usuário curtiu o post */}
+                            {likesByPost[post.id]?.includes(currentUserId) ? (
+                              <Heart className="cursor-pointer fill-current text-red-500 hover:text-red-700" />
+                            ) : (
+                              <Heart className="cursor-pointer hover:text-red-500" />
+                            )}
+                            <span className="absolute -top-10 left-[100%] -translate-x-[50%] z-20 origin-left scale-0 px-3 rounded-lg border border-gray-300 bg-white py-1 text-sm font-bold shadow-md transition-all duration-300 ease-in-out group-hover:scale-100">
+                              Like
+                            </span>
+                          </button>
+                        </DialogTrigger>
+                      </Dialog>
                     </div>
-                    <div>{post.comments.length}</div>
-                    <Dialog key={post.comments}>
+                    <div className="flex items-center gap-1">
+                      {post.comments.length}
+                    </div>
+                    <Dialog>
                       <DialogTrigger asChild>
-                        <button
-                          className="group relative"
-                          aria-label="Abrir comentários"
-                        >
+                        <button className="group relative">
                           <MessageCircle className="cursor-pointer hover:text-blue-500" />
                           <span
                             className="absolute -top-10 left-[100%] -translate-x-[50%] 
                         z-20 origin-left scale-0 px-3 rounded-lg border 
-                        border-gray-300 bg-white py-1 text-sm font-bold
+                        border-gray-300 bg-white py-1 text-sm font-bold text-zinc-500
                         shadow-md transition-all duration-300 ease-in-out 
                         group-hover:scale-100"
                           >
@@ -553,7 +649,74 @@ const ProfilePage = () => {
                                 <SelectGroup className="grid grid-cols-5 gap-2">
                                   {/* Emojis de Expressões */}
                                   <SelectItem value="😀">😀</SelectItem>
+                                  <SelectItem value="😅">😅</SelectItem>
+                                  <SelectItem value="😂">😂</SelectItem>
+                                  <SelectItem value="😍">😍</SelectItem>
+                                  <SelectItem value="😎">😎</SelectItem>
+                                  <SelectItem value="😢">😢</SelectItem>
+                                  <SelectItem value="😡">😡</SelectItem>
+                                  <SelectItem value="🤔">🤔</SelectItem>
+                                  <SelectItem value="🥳">🥳</SelectItem>
+                                  <SelectItem value="😴">😴</SelectItem>
 
+                                  {/* Emojis de Gestos */}
+                                  <SelectItem value="👍">👍</SelectItem>
+                                  <SelectItem value="👎">👎</SelectItem>
+                                  <SelectItem value="👏">👏</SelectItem>
+                                  <SelectItem value="🙌">🙌</SelectItem>
+                                  <SelectItem value="👌">👌</SelectItem>
+                                  <SelectItem value="🙏">🙏</SelectItem>
+                                  <SelectItem value="🤝">🤝</SelectItem>
+                                  <SelectItem value="🤟">🤟</SelectItem>
+                                  <SelectItem value="✌">✌</SelectItem>
+                                  <SelectItem value="👋">👋</SelectItem>
+
+                                  {/* Emojis de Objetos */}
+                                  <SelectItem value="❤️">❤️</SelectItem>
+                                  <SelectItem value="🔥">🔥</SelectItem>
+                                  <SelectItem value="⭐">⭐</SelectItem>
+                                  <SelectItem value="🎉">🎉</SelectItem>
+                                  <SelectItem value="📚">📚</SelectItem>
+                                  <SelectItem value="💡">💡</SelectItem>
+                                  <SelectItem value="⚽">⚽</SelectItem>
+                                  <SelectItem value="🎵">🎵</SelectItem>
+                                  <SelectItem value="📷">📷</SelectItem>
+                                  <SelectItem value="✈️">✈️</SelectItem>
+
+                                  {/* Emojis de Comida */}
+                                  <SelectItem value="🍎">🍎</SelectItem>
+                                  <SelectItem value="🍔">🍔</SelectItem>
+                                  <SelectItem value="🍕">🍕</SelectItem>
+                                  <SelectItem value="🍩">🍩</SelectItem>
+                                  <SelectItem value="🍿">🍿</SelectItem>
+                                  <SelectItem value="🍣">🍣</SelectItem>
+                                  <SelectItem value="🍦">🍦</SelectItem>
+                                  <SelectItem value="🍫">🍫</SelectItem>
+                                  <SelectItem value="🍹">🍹</SelectItem>
+                                  <SelectItem value="☕">☕</SelectItem>
+
+                                  {/* Emojis de Animais */}
+                                  <SelectItem value="🐶">🐶</SelectItem>
+                                  <SelectItem value="🐱">🐱</SelectItem>
+                                  <SelectItem value="🐭">🐭</SelectItem>
+                                  <SelectItem value="🐹">🐹</SelectItem>
+                                  <SelectItem value="🐼">🐼</SelectItem>
+                                  <SelectItem value="🦁">🦁</SelectItem>
+                                  <SelectItem value="🐸">🐸</SelectItem>
+                                  <SelectItem value="🐧">🐧</SelectItem>
+                                  <SelectItem value="🐳">🐳</SelectItem>
+                                  <SelectItem value="🦋">🦋</SelectItem>
+
+                                  {/* Emojis de Natureza */}
+                                  <SelectItem value="🌳">🌳</SelectItem>
+                                  <SelectItem value="🌺">🌺</SelectItem>
+                                  <SelectItem value="🌈">🌈</SelectItem>
+                                  <SelectItem value="☀️">☀️</SelectItem>
+                                  <SelectItem value="🌙">🌙</SelectItem>
+                                  <SelectItem value="🌊">🌊</SelectItem>
+                                  <SelectItem value="⛄">⛄</SelectItem>
+                                  <SelectItem value="🌌">🌌</SelectItem>
+                                  <SelectItem value="⚡">⚡</SelectItem>
                                   <SelectItem value="🌍">🌍</SelectItem>
                                 </SelectGroup>
                               </SelectContent>
@@ -571,9 +734,15 @@ const ProfilePage = () => {
                         {/* Lista de comentários */}
                         <div className="flex flex-col gap-6 h-[400px] overflow-y-auto">
                           <div className="flex gap-3 mb-5">
-                            <Label className="text-left font-medium">
+                            <Label
+                              id="comment"
+                              className="text-left font-medium"
+                            >
                               {(post.comments as any).map((comment: any) => (
-                                <div key={comment.id} className="flex gap-2">
+                                <div
+                                  key={comment.id || comment.content}
+                                  className="flex gap-2"
+                                >
                                   <div className="mb-8 flex-shrink-0">
                                     <Image
                                       priority
@@ -588,7 +757,6 @@ const ProfilePage = () => {
                                       className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 h-2 w-2 rounded-full border border-red-500"
                                     />
                                   </div>
-
                                   <div className="flex flex-col mt-2">
                                     <span className="font-bold">
                                       {comment.user.name}
@@ -606,10 +774,7 @@ const ProfilePage = () => {
                     </Dialog>
                   </div>
                 </div>
-                <Label
-                  key={post.description}
-                  className="text-left text-zinc-600 text-lg mt-1"
-                >
+                <Label className="text-left text-zinc-600 text-lg max-h-[200px] overflow-y-auto">
                   {post.description
                     ? post.description
                         .split("\n")

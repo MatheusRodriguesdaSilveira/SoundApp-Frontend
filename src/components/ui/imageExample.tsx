@@ -28,15 +28,15 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "./select";
 
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next";
 import FormData from "form-data";
 import { api } from "@/services/api";
 import { format } from "date-fns";
+import { jwtDecode } from "jwt-decode";
 
 interface UserData {
   user: string;
@@ -61,7 +61,11 @@ export const ImageTemplate = () => {
   const router = useRouter();
 
   const [isHyped, setIsHyped] = useState(false);
+
   const [liked, setLiked] = useState(false);
+  const [likesByPost, setLikesByPost] = useState<{ [key: string]: string[] }>(
+    {}
+  );
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [info, setInfo] = useState<UserData[]>([]);
@@ -94,11 +98,18 @@ export const ImageTemplate = () => {
         );
 
         const likes = response.data.map(
-          (post: { likes: string }) => post.likes
+          (post: { id: string; likes: { id: number; userId: string }[] }) => ({
+            postId: post.id, // ID do post
+            likes: post.likes.map((like) => like.userId), // Extraindo apenas os userIds dos likes
+          })
         );
+        const likesByPost = likes.reduce((acc: any, { postId, likes }: any) => {
+          acc[postId] = likes;
+          return acc;
+        }, {});
 
-        console.log("likes", likes);
-        setLiked(likes);
+        setLikesByPost(likesByPost);
+        setLiked(likesByPost[selectedPostId]?.includes(currentUserId));
         setProfileUser(users);
         setUserData(response.data);
         setInfo(response.data || []);
@@ -109,7 +120,7 @@ export const ImageTemplate = () => {
     };
 
     fetchUserData();
-  }, [router]);
+  }, [selectedPostId]);
 
   const handleSelectPost = (postId: string) => {
     setSelectedPostId(postId);
@@ -176,6 +187,8 @@ export const ImageTemplate = () => {
     try {
       const token = getCookie("login");
 
+      const newLikedState = !liked;
+
       const response = await api.post(
         `/like/${postId}`,
         { userId: userId },
@@ -185,15 +198,42 @@ export const ImageTemplate = () => {
           },
         }
       );
+      setLiked(newLikedState);
 
-      console.log(response.data); // Verifique a estrutura de response.data
-      setLiked(response.data.like);
-      window.location.reload();
+      // Atualizar o número de likes localmente
+      setLikesByPost((prevLikesByPost) => {
+        const updatedLikes = [...(prevLikesByPost[postId] || [])];
+
+        if (newLikedState) {
+          // Adicionar o usuário na lista de curtidas
+          updatedLikes.push(currentUserId);
+        } else {
+          // Remover o usuário da lista de curtidas
+          const userIndex = updatedLikes.indexOf(currentUserId);
+          if (userIndex > -1) {
+            updatedLikes.splice(userIndex, 1);
+          }
+        }
+
+        return {
+          ...prevLikesByPost,
+          [postId]: updatedLikes,
+        };
+      });
     } catch (error) {
       console.error("Error liking post:", error);
     }
   };
 
+  const token = getCookie("login");
+  if (token === undefined) {
+    // handle the case where the cookie is not found
+    console.error("Cookie not found");
+    return;
+  }
+  const decoded = jwtDecode(token as string) as { sub: string };
+
+  const currentUserId = decoded.sub;
   return (
     <>
       <div className="flex flex-col items-center">
@@ -256,7 +296,7 @@ export const ImageTemplate = () => {
                     <div className="flex mb-2 gap-1 text-zinc-500">
                       <div className="flex items-center gap-1">
                         <Dialog>
-                          <div>{post.likes.length || 0}</div>
+                          <div>{likesByPost[post.id]?.length}</div>
                           <DialogTrigger
                             onClick={() =>
                               handleSelectUserPost({
@@ -269,18 +309,19 @@ export const ImageTemplate = () => {
                             <button
                               onClick={() => {
                                 const postId = post.id;
-                                const userId = (post.user as any).id;
+                                const userId = currentUserId;
                                 handleLikeButton(postId, userId);
                               }}
                               className="group relative"
                             >
-                              <Heart
-                                className={`cursor-pointer hover:text-red-500 ${
-                                  !liked ? "fill-current text-red-500" : ""
-                                }`}
-                              />
+                              {/* Verifica se o usuário curtiu o post */}
+                              {likesByPost[post.id]?.includes(currentUserId) ? (
+                                <Heart className="cursor-pointer fill-current text-red-500 hover:text-red-700" />
+                              ) : (
+                                <Heart className="cursor-pointer hover:text-red-500" />
+                              )}
                               <span className="absolute -top-10 left-[100%] -translate-x-[50%] z-20 origin-left scale-0 px-3 rounded-lg border border-gray-300 bg-white py-1 text-sm font-bold shadow-md transition-all duration-300 ease-in-out group-hover:scale-100">
-                                {liked ? "Deslike" : "Like"}
+                                Like
                               </span>
                             </button>
                           </DialogTrigger>
