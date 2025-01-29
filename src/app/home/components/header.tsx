@@ -1,35 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { LogoHeader } from "@/components/ui/logoHeader";
 import { ModeThemeHeader } from "@/components/ui/themeButton";
-import {
-  Bolt,
-  Crown,
-  Handshake,
-  Home,
-  LogOut,
-  Menu,
-  MousePointer2,
-  User,
-  UserCogIcon,
-} from "lucide-react";
+import { Crown, Home, LogOut, MousePointer2, Siren } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 import UserProfile from "/public/user.png";
 import { FormPost } from "./formPost";
-import { DialogEditProfile } from "./dialogEditProfile";
 import { useEffect, useState } from "react";
 import { api } from "@/services/api";
 import { getCookie } from "cookies-next";
@@ -47,15 +27,6 @@ interface UserData {
 
 export const NavBar = () => {
   const router = useRouter();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
 
   const [userData, setUserData] = useState<UserData | null>(null);
 
@@ -115,22 +86,16 @@ export const NavBar = () => {
               </a>
             </li>
             <li className="flex xl:gap-1 2xl:gap-2 mb-5">
-              <MousePointer2 className="2xl:size-7 xl:size-5 lg:size-5" />
-              <a
-                className="block mt-0.5 font-medium text-zinc-800 dark:text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 dark:before:bg-zinc-200 before:bg-zinc-800 before:transition-all before:duration-300 hover:before:w-full"
-                href=""
-              >
+              <Siren className="2xl:size-7 xl:size-5 lg:size-5 text-yellow-400" />
+              <span className="flex line-through decoration-orange-300 decoration-[3px] mt-0.5 font-medium text-zinc-800 dark:text-zinc-200">
                 Mensagens
-              </a>
+              </span>
             </li>
             <li className="flex xl:gap-1 2xl:gap-2 mb-5">
-              <Crown className="2xl:size-7 xl:size-5 lg:size-5" />
-              <a
-                className="block mt-0.5 font-medium text-zinc-800 dark:text-zinc-200 relative before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 dark:before:bg-zinc-200 before:bg-zinc-800 before:transition-all before:duration-300 hover:before:w-full"
-                href=""
-              >
+              <Siren className="2xl:size-7 xl:size-5 lg:size-5 text-yellow-400" />
+              <span className="flex line-through decoration-orange-300 decoration-[3px] mt-0.5 font-medium text-zinc-800 dark:text-zinc-200">
                 Premium
-              </a>
+              </span>
             </li>
             <li className="flex xl:gap-1 2xl:gap-2 ">
               <Image

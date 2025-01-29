@@ -92,15 +92,15 @@ export const ImageTemplate = () => {
           },
         });
 
-        const users = response.data.map(
-          (user: { user: any; name: string; profilePicture: string }) =>
+        const users = response.data?.map(
+          (user: { user: string; name: string; profilePicture: string }) =>
             user.user
         );
 
-        const likes = response.data.map(
+        const likes = response.data?.map(
           (post: { id: string; likes: { id: number; userId: string }[] }) => ({
             postId: post.id, // ID do post
-            likes: post.likes.map((like) => like.userId), // Extraindo apenas os userIds dos likes
+            likes: post.likes?.map((like) => like.userId), // Extraindo apenas os userIds dos likes
           })
         );
         const likesByPost = likes.reduce((acc: any, { postId, likes }: any) => {
@@ -199,17 +199,16 @@ export const ImageTemplate = () => {
         }
       );
       setLiked(newLikedState);
-
       // Atualizar o número de likes localmente
       setLikesByPost((prevLikesByPost) => {
+        if (!prevLikesByPost) return { [postId]: [] };
+
         const updatedLikes = [...(prevLikesByPost[postId] || [])];
 
         if (newLikedState) {
-          // Adicionar o usuário na lista de curtidas
-          updatedLikes.push(currentUserId);
+          updatedLikes.push(userId);
         } else {
-          // Remover o usuário da lista de curtidas
-          const userIndex = updatedLikes.indexOf(currentUserId);
+          const userIndex = updatedLikes.indexOf(userId);
           if (userIndex > -1) {
             updatedLikes.splice(userIndex, 1);
           }
@@ -296,7 +295,7 @@ export const ImageTemplate = () => {
                     <div className="flex mb-2 gap-1 text-zinc-500">
                       <div className="flex items-center gap-1">
                         <Dialog>
-                          <div>{likesByPost[post.id]?.length}</div>
+                          <div>{likesByPost[post.id]?.length || 0}</div>
                           <DialogTrigger
                             onClick={() =>
                               handleSelectUserPost({

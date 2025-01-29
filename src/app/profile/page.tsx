@@ -121,7 +121,7 @@ const ProfilePage = () => {
         });
 
         const posts = response.data.posts
-          .map(
+          ?.map(
             (post: {
               id: string;
               imageUrl: string;
@@ -143,13 +143,16 @@ const ProfilePage = () => {
             likes: post.likes.map((like: any) => like.userId),
           })
         );
-        const likesByPost = likes.reduce((acc: any, { postId, likes }: any) => {
-          acc[postId] = likes;
-          return acc;
-        }, {});
+        const likesByPost = likes?.reduce(
+          (acc: any, { postId, likes }: any) => {
+            acc[postId] = likes;
+            return acc;
+          },
+          {}
+        );
 
         setLikesByPost(likesByPost);
-        setLiked(likesByPost[selectedPostId]?.includes(currentUserId));
+        setLiked(likesByPost?.[selectedPostId]?.includes(currentUserId));
 
         setUserData(response.data);
 
@@ -421,7 +424,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 2xl:w-[1200px] xl:w-[650px] lg:w-[700px] mx-auto sm:p-6 lg:p-0">
-        {post.map((post) => (
+        {post?.map((post) => (
           <Dialog key={post.id}>
             <DialogTrigger onClick={() => handleSelectPost(post.id)} asChild>
               <div className="w-full 2xl:h-96 xl:h-80 md:h-56 lg:h-72 relative rounded-3xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
@@ -568,7 +571,11 @@ const ProfilePage = () => {
                   <div className="flex items-center gap-1">
                     <div className="flex items-center gap-1">
                       <Dialog>
-                        <div>{likesByPost[post.id]?.length}</div>
+                        {likesByPost && likesByPost[post.id] ? (
+                          <div>{likesByPost[post.id].length || 0}</div>
+                        ) : (
+                          <div>0</div>
+                        )}{" "}
                         <DialogTrigger
                           onClick={() =>
                             handleSelectUserPost({
