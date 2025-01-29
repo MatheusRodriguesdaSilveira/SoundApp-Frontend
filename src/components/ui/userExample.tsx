@@ -160,7 +160,7 @@ export const UserTemplate = () => {
                     <DialogTitle>{user.name}</DialogTitle>
                     <Label className="text-zinc-700 dark:text-zinc-200">
                       {user.descriptionProfile
-                        .split("\n")
+                        ?.split("\n")
                         .map((item, index) => (
                           <DialogDescription key={index}>
                             {item}
